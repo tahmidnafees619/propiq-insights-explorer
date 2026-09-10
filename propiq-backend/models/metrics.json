@@ -1,0 +1,163 @@
+{
+  "generated_at": "2026-09-10T20:55:55+00:00",
+  "best_model": "GradientBoostingRegressor",
+  "n_samples": 21599,
+  "n_train": 17279,
+  "n_test": 4320,
+  "n_features": 16,
+  "feature_columns": [
+    "sqft_living",
+    "sqft_lot",
+    "bedrooms",
+    "bathrooms",
+    "floors",
+    "waterfront",
+    "view",
+    "condition",
+    "grade",
+    "sqft_above",
+    "sqft_basement",
+    "yr_built",
+    "lat",
+    "long",
+    "sqft_living15",
+    "sqft_lot15"
+  ],
+  "target": "log1p(price)",
+  "test_size": 0.2,
+  "random_state": 42,
+  "metrics": {
+    "r2_log": 0.907,
+    "rmse_log": 0.1624,
+    "r2": 0.9036,
+    "mae": 64704,
+    "rmse": 114277,
+    "mape": 11.74,
+    "median_ape": 8.35,
+    "within_10_pct": 57.1,
+    "within_20_pct": 83.2
+  },
+  "calibration": {
+    "residual_std_log": 0.16236,
+    "q05": -0.24679,
+    "q25": -0.07912,
+    "q75": 0.08893,
+    "q95": 0.26107
+  },
+  "leaderboard": [
+    {
+      "model": "GradientBoostingRegressor",
+      "r2_log": 0.907,
+      "rmse_log": 0.1624,
+      "r2": 0.9036,
+      "mae": 64704,
+      "rmse": 114277,
+      "mape": 11.74,
+      "median_ape": 8.35,
+      "within_10_pct": 57.1,
+      "within_20_pct": 83.2
+    },
+    {
+      "model": "RandomForestRegressor",
+      "r2_log": 0.8957,
+      "rmse_log": 0.172,
+      "r2": 0.8851,
+      "mae": 69200,
+      "rmse": 124749,
+      "mape": 12.4,
+      "median_ape": 8.72,
+      "within_10_pct": 56.1,
+      "within_20_pct": 81.9
+    },
+    {
+      "model": "LinearRegression",
+      "r2_log": 0.7677,
+      "rmse_log": 0.2567,
+      "r2": 0.4686,
+      "mae": 115701,
+      "rmse": 268341,
+      "mape": 20.19,
+      "median_ape": 15.79,
+      "within_10_pct": 33.3,
+      "within_20_pct": 61.1
+    },
+    {
+      "model": "Ridge",
+      "r2_log": 0.7677,
+      "rmse_log": 0.2567,
+      "r2": 0.4685,
+      "mae": 115701,
+      "rmse": 268345,
+      "mape": 20.19,
+      "median_ape": 15.79,
+      "within_10_pct": 33.3,
+      "within_20_pct": 61.1
+    }
+  ],
+  "feature_importance": [
+    {
+      "feature": "lat",
+      "importance": 0.309532
+    },
+    {
+      "feature": "grade",
+      "importance": 0.301261
+    },
+    {
+      "feature": "sqft_living",
+      "importance": 0.226435
+    },
+    {
+      "feature": "long",
+      "importance": 0.04714
+    },
+    {
+      "feature": "sqft_living15",
+      "importance": 0.028133
+    },
+    {
+      "feature": "yr_built",
+      "importance": 0.019132
+    },
+    {
+      "feature": "view",
+      "importance": 0.015026
+    },
+    {
+      "feature": "sqft_lot",
+      "importance": 0.01142
+    },
+    {
+      "feature": "sqft_above",
+      "importance": 0.011405
+    },
+    {
+      "feature": "sqft_lot15",
+      "importance": 0.009576
+    },
+    {
+      "feature": "waterfront",
+      "importance": 0.006815
+    },
+    {
+      "feature": "condition",
+      "importance": 0.006475
+    },
+    {
+      "feature": "bathrooms",
+      "importance": 0.004202
+    },
+    {
+      "feature": "sqft_basement",
+      "importance": 0.001699
+    },
+    {
+      "feature": "bedrooms",
+      "importance": 0.001106
+    },
+    {
+      "feature": "floors",
+      "importance": 0.000644
+    }
+  ]
+}

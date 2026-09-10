@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: ./propiq-backend
+    container_name: propiq-api
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: "false"
+      LOG_LEVEL: INFO
+      DATABASE_URL: sqlite:///./data/propiq.db
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000
+      ENABLE_DEMO_FALLBACK: "true"
+    volumes:
+      # Persist the database and any retrained artifacts across restarts.
+      - propiq-data:/app/data
+      - propiq-models:/app/models
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/health', timeout=4).status == 200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_URL: http://localhost:8000
+    container_name: propiq-web
+    ports:
+      - "5173:5173"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  propiq-data:
+  propiq-models:

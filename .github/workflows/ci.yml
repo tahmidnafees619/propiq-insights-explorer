@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A new push to the same branch supersedes an in-flight run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+
+jobs:
+  backend:
+    name: Backend (lint & test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: propiq-backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: propiq-backend/requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check app scripts tests
+
+      - name: Type check (mypy)
+        run: mypy app
+        continue-on-error: true
+
+      - name: Run tests
+        # Model artifacts are not committed, so prediction tests self-skip.
+        # Everything else — contracts, filtering, demo-data integrity — runs.
+        run: pytest tests/ -v --tb=short
+
+  frontend:
+    name: Frontend (lint, typecheck & build)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist/
+          retention-days: 7
+
+  model:
+    name: Model training smoke test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: propiq-backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: propiq-backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify the training pipeline imports and is configured
+        # The dataset is not redistributed, so a full train cannot run in CI.
+        # This still catches import errors, a broken feature contract, and
+        # drift between the training script and the inference service.
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, '.')
+          from scripts.train_model import FEATURE_COLUMNS, CANDIDATE_MODELS, evaluate
+          from app.services.ml_service import FEATURE_LABELS, BASELINE_PROPERTY
+
+          assert len(FEATURE_COLUMNS) == 16, FEATURE_COLUMNS
+          assert {'bedrooms', 'bathrooms'} <= set(FEATURE_COLUMNS), \
+              'rooms must stay in the feature set: the predictor UI exposes them'
+
+          missing_labels = set(FEATURE_COLUMNS) - set(FEATURE_LABELS)
+          assert not missing_labels, f'features without a display label: {missing_labels}'
+
+          missing_baseline = set(FEATURE_COLUMNS) - set(BASELINE_PROPERTY)
+          assert not missing_baseline, f'features missing from the breakdown baseline: {missing_baseline}'
+
+          assert 'GradientBoostingRegressor' in CANDIDATE_MODELS
+          print(f'OK: {len(FEATURE_COLUMNS)} features, {len(CANDIDATE_MODELS)} candidate models')
+          PY

@@ -1,0 +1,56 @@
+[project]
+name = "propiq-backend"
+version = "1.0.0"
+description = "Real estate market intelligence API for King County, WA"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:pytest_asyncio.*",
+    "ignore::DeprecationWarning:starlette.*",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [".venv", "venv", "data", "models", "__pycache__"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # bugbear
+    "C4",   # comprehensions
+    "UP",   # pyupgrade
+    "SIM",  # simplify
+    "RUF",  # ruff-specific
+]
+ignore = [
+    "B008",  # FastAPI's Depends()/Query() in defaults is the documented idiom
+    "E501",  # line length is enforced by the formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]        # asserts are the point of a test
+"scripts/*" = ["T201"]      # scripts print progress deliberately
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = ["venv", ".venv", "tests"]

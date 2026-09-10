@@ -1,0 +1,65 @@
+name: Bug report
+description: Something is not working as expected
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a report.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start the API with ...
+        2. Open the predictor page
+        3. Set grade to ...
+        4. See error
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the project?
+      options:
+        - Frontend (dashboard, predictor, charts)
+        - Backend API
+        - ML model / training
+        - Data seeding
+        - Docs / setup
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: request-id
+    attributes:
+      label: Request ID
+      description: If the API returned an error, paste its `request_id` — it ties the response to a log line.
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        OS: Windows 11
+        Python: 3.11.8
+        Node: 20.11.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      render: shell
