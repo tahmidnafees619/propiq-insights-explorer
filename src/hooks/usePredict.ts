@@ -7,10 +7,10 @@
  * field-level messages when the API rejected the input.
  */
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { ApiError, apiPost } from '@/lib/api';
-import type { PredictionInput, PredictionResponse, PredictionResult } from '@/types';
+import { ApiError, apiPost } from "@/lib/api";
+import type { PredictionInput, PredictionResponse, PredictionResult } from "@/types";
 
 /** Map the API payload onto the shape the result components render. */
 function toResult(response: PredictionResponse): PredictionResult {
@@ -26,12 +26,14 @@ function toResult(response: PredictionResponse): PredictionResult {
     modelUsed: response.model_used,
     extrapolated: response.extrapolated,
     notes: response.notes ?? [],
+    comparables: response.comparables ?? [],
+    comparablesSummary: response.comparables_summary ?? null,
   };
 }
 
 export function usePredict() {
   return useMutation<PredictionResult, ApiError, PredictionInput>({
-    mutationFn: async (input) => toResult(await apiPost<PredictionResponse>('/api/predict', input)),
+    mutationFn: async (input) => toResult(await apiPost<PredictionResponse>("/api/predict", input)),
     retry: false,
   });
 }

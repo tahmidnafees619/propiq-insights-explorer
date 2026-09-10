@@ -4,6 +4,7 @@ import { AlertTriangle, Info } from "lucide-react";
 import { FeatureImportanceChart } from "@/components/charts/FeatureImportanceChart";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ConfidenceGauge } from "@/components/predictor/ConfidenceGauge";
+import { ComparableSales } from "@/components/predictor/ComparableSales";
 import { PredictionResult } from "@/components/predictor/PredictionResult";
 import { PropertyForm } from "@/components/predictor/PropertyForm";
 import { ValueBreakdown } from "@/components/predictor/ValueBreakdown";
@@ -63,6 +64,7 @@ function PredictorPage() {
                 <ExtrapolationNotice notes={result.notes} />
               )}
               <PredictionResult result={result} />
+              <ComparableSales result={result} />
               <ValueBreakdown result={result} />
               <FeatureImportanceChart />
               <ConfidenceGauge result={result} />
@@ -91,14 +93,24 @@ function PredictingState() {
  * Field-level validation messages are listed individually so the user can see
  * exactly which input the API rejected, rather than a generic failure.
  */
-function PredictionError({ error }: { error: { displayMessage: string; details: { field: string; message: string }[]; isNetworkError: boolean } }) {
+function PredictionError({
+  error,
+}: {
+  error: {
+    displayMessage: string;
+    details: { field: string; message: string }[];
+    isNetworkError: boolean;
+  };
+}) {
   return (
     <div className="card-surface min-h-[500px] p-6">
       <div className="flex items-start gap-3 rounded-xl border border-[#EF4444]/40 bg-[#EF4444]/10 p-4">
         <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[#EF4444]" />
         <div className="min-w-0">
           <h3 className="text-sm font-semibold text-foreground">
-            {error.isNetworkError ? "Could not reach the model" : "That property could not be priced"}
+            {error.isNetworkError
+              ? "Could not reach the model"
+              : "That property could not be priced"}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">{error.displayMessage}</p>
 
@@ -106,7 +118,8 @@ function PredictionError({ error }: { error: { displayMessage: string; details: 
             <ul className="mt-3 space-y-1">
               {error.details.map((detail) => (
                 <li key={detail.field} className="text-xs text-muted-foreground">
-                  <span className="font-mono text-[#F59E0B]">{detail.field}</span> — {detail.message}
+                  <span className="font-mono text-[#F59E0B]">{detail.field}</span> —{" "}
+                  {detail.message}
                 </li>
               ))}
             </ul>

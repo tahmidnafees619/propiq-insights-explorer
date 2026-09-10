@@ -170,6 +170,30 @@ Metrics are reported on **actual sale prices**, not the log-transformed target �
 
 Intervals come from the standard deviation of held-out residuals in log space, converted into multiplicative price bounds — not a fixed percentage. `metrics.json` carries the calibration data, so intervals track the deployed model's real error.
 
+### Comparable sales
+
+Every prediction carries the five most similar real sales, because an agent
+reasons in comps rather than feature importances — and because it is the
+cheapest sanity check available on the model's number.
+
+Selection runs a bounding-box prefilter in SQL, then scores exact haversine
+distance in Python. Candidates are ranked on a weighted similarity score:
+distance 40%, size 30%, grade 20%, room count 10%. Distance dominates because
+location is the model's strongest signal.
+
+The search widens only when it has to — 2 miles, then 5, then 15 — relaxing
+size and grade tolerance at each step until it finds enough matches.
+
+**Waterfront is a hard filter, never a scored dimension.** It commands a ~213%
+premium in this dataset, so a mixed set would make the range meaningless in
+whichever direction it was mixed. An earlier version scored it, and priced a
+Medina waterfront home against inland comps: the estimate landed $850k above a
+range built from the wrong houses.
+
+`comparables_summary.estimate_within_range` reports whether the estimate falls
+between the cheapest and priciest comp. It is deliberately allowed to come back
+false — that disagreement is information, not a bug to hide.
+
 ### Value breakdown
 
 Computed by ablation: price a typical King County home, then swap in the user's values one group at a time and record each delta. A boosted model is not additive, so the deltas will not sum exactly to the final price; the remainder is reported openly as "Combined effects" rather than being spread across the other rows.

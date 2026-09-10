@@ -27,6 +27,7 @@ Most home-value estimators hand you a number and nothing else. PropIQ is built a
 | **A price** | A gradient-boosted estimate from 16 property attributes. |
 | **A calibrated range** | A 90% prediction interval derived from the model's held-out residuals — not a fixed percentage. A wider band genuinely means a less certain estimate. |
 | **A breakdown** | The estimate decomposed by ablation into size, rooms, quality, location and waterfront/view, so you can see *why* it landed where it did. |
+| **Real comparables** | The five most similar sales nearby, with the estimate shown against what those homes actually sold for. Comps never cross the waterfront line. |
 
 Alongside the predictor sits a market dashboard: price distributions, per-bedroom and per-grade breakdowns, seasonal trends, and a filterable table of sale records.
 

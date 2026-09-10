@@ -74,6 +74,40 @@ export interface ValueDriver {
 }
 
 /** Raw `POST /api/predict` response. */
+/** One real sale offered as a comparable for the subject property. */
+export interface ComparableSale {
+  id: number;
+  price: number;
+  price_formatted: string;
+  bedrooms: number;
+  bathrooms: number;
+  sqft_living: number;
+  grade: number;
+  yr_built: number;
+  zipcode?: string | null;
+  lat: number;
+  long: number;
+  /** Matched exactly against the subject; comps never cross the waterfront line. */
+  waterfront: number;
+  /** Straight-line miles from the subject property. */
+  distance_miles: number;
+  /** Match strength against the subject, 0-100. */
+  similarity: number;
+  price_per_sqft: number;
+  /** When the sale closed, e.g. "Mar 2015". */
+  sold?: string | null;
+}
+
+export interface ComparablesSummary {
+  count: number;
+  low_price: number;
+  high_price: number;
+  median_price: number;
+  /** True when the estimate falls between the cheapest and priciest comp. */
+  estimate_within_range: boolean;
+  source: DataSource;
+}
+
 export interface PredictionResponse {
   predicted_price: number;
   price_formatted: string;
@@ -89,6 +123,8 @@ export interface PredictionResponse {
   extrapolated: boolean;
   notes: string[];
   input_summary: Record<string, number>;
+  comparables: ComparableSale[];
+  comparables_summary: ComparablesSummary | null;
 }
 
 /** View-model shape the predictor components render. */
@@ -105,6 +141,8 @@ export interface PredictionResult {
   modelUsed: string;
   extrapolated: boolean;
   notes: string[];
+  comparables: ComparableSale[];
+  comparablesSummary: ComparablesSummary | null;
 }
 
 export interface BedroomStat {
