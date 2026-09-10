@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import case, func, select
+from sqlalchemy import case, func, select, text
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -215,3 +215,61 @@ def _waterfront_premium(db: Session) -> float:
     if not inland or not waterfront:
         return 0.0
     return round((waterfront / inland - 1) * 100, 1)
+
+
+# Median per group in one pass: rank rows inside each ZIP, then average the
+# middle one (odd counts) or middle two (even counts). Avoids 70 round trips.
+_ZIPCODE_SQL = text("""
+    WITH ranked AS (
+        SELECT
+            zipcode,
+            price,
+            sqft_living,
+            ROW_NUMBER() OVER (PARTITION BY zipcode ORDER BY price) AS rn,
+            COUNT(*)     OVER (PARTITION BY zipcode)               AS cnt
+        FROM properties
+        WHERE zipcode IS NOT NULL AND sqft_living > 0
+    )
+    SELECT
+        zipcode,
+        AVG(CASE WHEN rn IN ((cnt + 1) / 2, (cnt + 2) / 2) THEN price END) AS median_price,
+        AVG(price)               AS avg_price,
+        AVG(price / sqft_living) AS price_per_sqft,
+        MAX(cnt)                 AS count
+    FROM ranked
+    GROUP BY zipcode
+    ORDER BY zipcode
+""")
+
+
+def get_zipcode_stats(db: Session) -> dict[str, Any]:
+    """Per-ZIP aggregates for the choropleth, with colour-scale bounds."""
+    total = int(db.scalar(select(func.count(Property.id))) or 0)
+
+    if total == 0 and settings.ENABLE_DEMO_FALLBACK:
+        rows, source = demo_data.demo_zipcode_stats(), "demo"
+    elif total == 0:
+        rows, source = [], "database"
+    else:
+        rows, source = _database_zipcode_stats(db), "database"
+
+    medians = [row["median_price"] for row in rows]
+    return {
+        "zipcodes": rows,
+        "min_median": min(medians) if medians else 0.0,
+        "max_median": max(medians) if medians else 0.0,
+        "source": source,
+    }
+
+
+def _database_zipcode_stats(db: Session) -> list[dict[str, Any]]:
+    return [
+        {
+            "zipcode": row.zipcode,
+            "median_price": round(float(row.median_price), 2),
+            "avg_price": round(float(row.avg_price), 2),
+            "price_per_sqft": round(float(row.price_per_sqft), 2),
+            "count": int(row.count),
+        }
+        for row in db.execute(_ZIPCODE_SQL)
+    ]

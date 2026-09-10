@@ -7,7 +7,7 @@
  */
 
 /** Whether a payload came from real records or the bundled showcase dataset. */
-export type DataSource = 'database' | 'demo';
+export type DataSource = "database" | "demo";
 
 export interface Property {
   id: number;
@@ -81,7 +81,7 @@ export interface PredictionResponse {
   price_low: number;
   price_high: number;
   confidence_percent: number;
-  confidence_level: 'high' | 'medium' | 'low';
+  confidence_level: "high" | "medium" | "low";
   percentile: number;
   breakdown: ValueDriver[];
   model_used: string;
@@ -97,7 +97,7 @@ export interface PredictionResult {
   margin: number;
   /** Interval coverage as a fraction, e.g. 0.9 for a 90% interval. */
   confidence: number;
-  confidenceLevel: 'high' | 'medium' | 'low';
+  confidenceLevel: "high" | "medium" | "low";
   breakdown: ValueDriver[];
   percentile: number;
   similar_low: number;
@@ -195,5 +195,23 @@ export interface KPIData {
   suffix?: string;
   sub: string;
   icon: string;
-  accent: 'blue' | 'green' | 'amber' | 'red';
+  accent: "blue" | "green" | "amber" | "red";
+}
+
+/** Aggregates for one ZIP code, used to shade the price choropleth. */
+export interface ZipcodeStat {
+  zipcode: string;
+  median_price: number;
+  avg_price: number;
+  price_per_sqft: number;
+  count: number;
+}
+
+export interface ZipcodeStatsResponse {
+  zipcodes: ZipcodeStat[];
+  /** Lowest ZIP median — the colour scale's floor. */
+  min_median: number;
+  /** Highest ZIP median — the colour scale's ceiling. */
+  max_median: number;
+  source: DataSource;
 }

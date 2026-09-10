@@ -139,6 +139,7 @@ propiq/
 │   │   ├── layout/                   # Navbar, sidebar, page wrapper
 │   │   └── shared/                   # Empty/error/loading states, data-source badge
 │   ├── hooks/                        # One hook per endpoint, each with demo fallback
+│   ├── data/                         # Simplified Census ZCTA boundaries (~120 KB)
 │   ├── lib/
 │   │   ├── api.ts                    # Typed client, error normalisation, timeouts
 │   │   └── demo-data.ts              # Bundled showcase dataset
@@ -214,6 +215,7 @@ Base URL `http://localhost:8000`. Full interactive docs at `/docs`.
 | `GET` | `/api/properties` | Filter, sort, paginate sale records |
 | `GET` | `/api/properties/{id}` | One property |
 | `GET` | `/api/stats` | Every dashboard aggregate in one round trip |
+| `GET` | `/api/stats/by-zipcode` | Median price, $/sqft and volume per ZIP code |
 
 <details>
 <summary><b>Example: predicting a price</b></summary>
@@ -365,3 +367,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Issues and pull requests are welcome.
 ## Acknowledgements
 
 Built on the [King County House Sales dataset](https://www.kaggle.com/datasets/harlfoxem/housesalesprediction) — 21,613 home sales from May 2014 to May 2015, published by King County, WA.
+
+ZIP-code boundaries are US Census Bureau [TIGER/Line ZCTAs](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html), public domain, simplified to ~120 KB for the web.

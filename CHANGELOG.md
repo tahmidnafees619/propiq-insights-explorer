@@ -28,6 +28,8 @@ First production release. The application was audited end to end; this release f
 - **Calibrated prediction intervals.** Replaces the fixed ±8% margin with a 90% interval derived from held-out residuals, plus a high/medium/low confidence label and explicit extrapolation warnings.
 - **Value breakdown by ablation.** Attributes each estimate to size, rooms, quality, location and waterfront/view by re-pricing a typical home with each group swapped in. The non-additive remainder is reported openly as "Combined effects" rather than being hidden; the column reconciles to the final price.
 - **`GET /api/model/metrics`** — held-out accuracy of the deployed model, and the single source of truth for every published figure.
+- **`GET /api/stats/by-zipcode`** — median price, price per square foot and sale volume for each of the 70 King County ZIP codes.
+- **A real price choropleth**, replacing the fake pulsing-dot placeholder on the insights page. Renders all 70 ZIPs from simplified US Census ZCTA boundaries bundled with the app, projected to Web Mercator in-component — no tile server, no API key, and no network once the page has loaded. Shaded by quantile rather than equal interval, because the 8x price spread is skewed enough that equal intervals would render 68 of the 70 ZIPs identically.
 - **`GET /` service index** in place of a bare 404.
 - **Bundled demo dataset** on both the API and the frontend, so the dashboard is never blank on a fresh clone or with the backend offline. Deterministic, anchored to the published aggregates, and always labelled with a visible badge.
 - **Structured JSON logging** with per-request correlation IDs, echoed in `X-Request-ID` and embedded in error payloads.

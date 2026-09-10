@@ -114,23 +114,32 @@ def to_records(df: pd.DataFrame) -> list[dict]:
 
 def seed(records: list[dict], force: bool) -> int:
     """Insert records in batches. Returns the number written."""
-    create_tables()
+    from sqlalchemy import inspect, text
 
     with SessionLocal() as session:
-        existing = int(session.scalar(select(func.count(Property.id))) or 0)
+        # Check if the table exists (regardless of whether it has rows).
+        inspector = inspect(session.get_bind())
+        table_exists = "properties" in inspector.get_table_names()
+        existing = int(session.scalar(select(func.count(Property.id))) or 0) if table_exists else 0
 
-        if existing and not force:
+        if table_exists and existing and not force:
             print(
                 f"Database already holds {existing:,} properties. "
                 "Re-run with --force to replace them."
             )
             return 0
 
-        if existing and force:
-            print(f"Removing {existing:,} existing rows ...")
-            session.query(Property).delete()
+        if force and table_exists:
+            # Drop and recreate the table to ensure schema matches the model.
+            # (create_all() won't alter existing tables, so we drop first.)
+            print("Dropping and recreating the schema ...")
+            session.execute(text("DROP TABLE IF EXISTS properties"))
             session.commit()
 
+    # Create the schema fresh now.
+    create_tables()
+
+    with SessionLocal() as session:
         total = len(records)
         for start in range(0, total, BATCH_SIZE):
             batch = records[start:start + BATCH_SIZE]

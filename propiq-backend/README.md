@@ -78,6 +78,7 @@ data/                  raw/ (your CSV) · propiq.db
 | `GET` | `/api/properties` | Filter, sort, paginate sale records |
 | `GET` | `/api/properties/{id}` | One property |
 | `GET` | `/api/stats` | Every dashboard aggregate in one round trip |
+| `GET` | `/api/stats/by-zipcode` | Median price, $/sqft and volume per ZIP code |
 
 ### Prediction input
 
