@@ -268,6 +268,14 @@ The image is multi-stage — dependencies build in a throwaway layer so the runt
 
 ---
 
+## Author
+
+**Md. Tahmidur Rahman Nafees** — full-stack development and machine learning implementation.
+Department of Electrical and Computer Engineering, North South University.
+[LinkedIn](https://www.linkedin.com/in/md-tahmidur-rahman-nafees-04a6a3227/) · [GitHub](https://github.com/tahmidnafees619/propiq-insights-explorer-main)
+
+---
+
 ## Notes for deployment
 
 - **SQLite is the default** and is fine for a single-instance read-heavy workload. Point `DATABASE_URL` at PostgreSQL for anything concurrent.

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Filter, BarChart3, Cpu, Code2, Database, Boxes, Github } from "lucide-react";
+import { Filter, BarChart3, Cpu, Code2, Database, Boxes, Github, Linkedin } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useModelMetrics } from "@/hooks/useModelMetrics";
 import { useStats } from "@/hooks/useStats";
@@ -247,10 +247,44 @@ function AboutPage() {
         </div>
       </Section>
 
+      <Section title="Developer">
+        <div className="card-surface gradient-top-border p-6">
+          <h3 className="text-base font-semibold text-foreground">Md. Tahmidur Rahman Nafees</h3>
+          <p className="text-xs text-muted-foreground mt-1">
+            Department of Electrical and Computer Engineering, North South University
+          </p>
+          <p className="text-sm text-muted-foreground mt-4 max-w-2xl leading-relaxed">
+            Full-stack development and machine learning implementation — the data pipeline and model
+            training, interval calibration and explainability, the FastAPI service, and the React
+            dashboard.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-5">
+            <a
+              href="https://www.linkedin.com/in/md-tahmidur-rahman-nafees-04a6a3227/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#1E2D4A] hover:border-[#3B82F6] text-foreground transition btn-press hover-lift"
+            >
+              <Linkedin size={14} /> LinkedIn
+            </a>
+            <a
+              href="https://github.com/tahmidnafees619/propiq-insights-explorer-main"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#1E2D4A] hover:border-[#3B82F6] text-foreground transition btn-press hover-lift"
+            >
+              <Github size={14} /> View on GitHub
+            </a>
+          </div>
+        </div>
+      </Section>
+
       <footer className="mt-16 pt-8 border-t border-[#1E2D4A] flex flex-wrap items-center justify-between gap-4">
-        <p className="text-xs text-muted-foreground">Built with care · King County, WA dataset</p>
+        <p className="text-xs text-muted-foreground">
+          Built by Md. Tahmidur Rahman Nafees · King County, WA dataset
+        </p>
         <a
-          href="https://github.com"
+          href="https://github.com/tahmidnafees619/propiq-insights-explorer-main"
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#1E2D4A] hover:border-[#3B82F6] text-foreground transition btn-press hover-lift"

@@ -10,7 +10,7 @@
 
 Please do not open a public issue for security problems.
 
-Report vulnerabilities through [GitHub's private advisory form](https://github.com/tahmidnafees619/propiq/security/advisories/new). Include:
+Report vulnerabilities through [GitHub's private advisory form](https://github.com/tahmidnafees619/propiq-insights-explorer-main/security/advisories/new). Include:
 
 - what the issue is and why it matters,
 - steps to reproduce,

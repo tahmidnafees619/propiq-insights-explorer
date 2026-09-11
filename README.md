@@ -6,13 +6,15 @@
 
 A production-grade ML application that prices homes from 21,000+ real sales — and shows its working: what drove the number, how confident it is, and how accurate the model actually is.
 
-[![CI](https://github.com/tahmidnafees619/propiq/actions/workflows/ci.yml/badge.svg)](https://github.com/tahmidnafees619/propiq/actions/workflows/ci.yml)
+[![CI](https://github.com/tahmidnafees619/propiq-insights-explorer-main/actions/workflows/ci.yml/badge.svg)](https://github.com/tahmidnafees619/propiq-insights-explorer-main/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-3B82F6.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 
 [Quick start](#quick-start) · [Architecture](#architecture) · [API](#api-reference) · [Model](#the-model) · [Testing](#testing)
+
+**[Read the full project report →](PROJECT_REPORT.md)**
 
 </div>
 
@@ -44,8 +46,8 @@ Alongside the predictor sits a market dashboard: price distributions, per-bedroo
 **Prerequisites:** Python 3.11+, Node 20+
 
 ```bash
-git clone https://github.com/tahmidnafees619/propiq.git
-cd propiq
+git clone https://github.com/tahmidnafees619/propiq-insights-explorer-main.git
+cd propiq-insights-explorer-main
 ```
 
 <details open>
@@ -356,6 +358,15 @@ The suite covers the API contract, filtering and pagination, error envelopes, de
 **Tooling** — pytest · Ruff · ESLint · Prettier · Docker · GitHub Actions
 
 ---
+
+## Author
+
+**Md. Tahmidur Rahman Nafees**
+Full-stack development and machine learning implementation — data pipeline, model training and calibration, FastAPI backend, and React frontend.
+
+Department of Electrical and Computer Engineering, North South University
+
+[LinkedIn](https://www.linkedin.com/in/md-tahmidur-rahman-nafees-04a6a3227/) · [GitHub](https://github.com/tahmidnafees619/propiq-insights-explorer-main)
 
 ## Contributing
 
