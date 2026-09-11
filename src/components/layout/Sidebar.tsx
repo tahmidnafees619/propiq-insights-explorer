@@ -9,6 +9,10 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { motion } from "framer-motion";
+
+import { useMotionEnabled } from "@/components/motion";
+import { SPRING } from "@/lib/motion";
 import { useModelMetrics } from "@/hooks/useModelMetrics";
 import { fmtCompact } from "@/lib/formatters";
 
@@ -17,7 +21,6 @@ const items = [
   { to: "/insights", label: "Market Map", icon: Map },
   { to: "/predictor", label: "Price Predictor", icon: Brain },
   { to: "/about", label: "Model Report", icon: FileText },
-  { to: "/about", label: "Settings", icon: Settings },
 ] as const;
 
 export function Sidebar() {
@@ -25,6 +28,7 @@ export function Sidebar() {
   // Report the model that is actually deployed rather than a pinned figure.
   const { data: metrics } = useModelMetrics();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const enabled = useMotionEnabled();
 
   return (
     <aside
@@ -46,11 +50,19 @@ export function Sidebar() {
             <Link
               key={i}
               to={item.to}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition group ${active ? "bg-[#111D35] text-foreground" : "text-muted-foreground hover:bg-[#0D1526] hover:text-foreground"}`}
+              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group ${active ? "text-foreground" : "text-muted-foreground hover:bg-[#0D1526] hover:text-foreground"}`}
               title={item.label}
             >
-              <Icon size={18} className={active ? "text-[#3B82F6]" : ""} />
-              {!collapsed && <span className="text-sm">{item.label}</span>}
+              {/* Shared with every other item, so it slides between them. */}
+              {active && (
+                <motion.span
+                  layoutId="sidebar-pill"
+                  className="absolute inset-0 rounded-xl bg-[#111D35]"
+                  transition={enabled ? { type: "spring", ...SPRING.responsive } : { duration: 0 }}
+                />
+              )}
+              <Icon size={18} className={`relative z-10 ${active ? "text-[#3B82F6]" : ""}`} />
+              {!collapsed && <span className="relative z-10 text-sm">{item.label}</span>}
             </Link>
           );
         })}

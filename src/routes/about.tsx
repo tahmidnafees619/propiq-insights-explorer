@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Filter, BarChart3, Cpu, Code2, Database, Boxes, Github, Linkedin } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
+import { Reveal } from "@/components/motion";
 import { useModelMetrics } from "@/hooks/useModelMetrics";
 import { useStats } from "@/hooks/useStats";
 import { fmtCurrency, fmtNumber } from "@/lib/formatters";
@@ -308,9 +309,9 @@ function MetricTile({ label, value, sub }: { label: string; value: string; sub: 
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mb-12">
+    <Reveal className="mb-12">
       <h2 className="text-lg font-semibold text-foreground mb-4">{title}</h2>
       {children}
-    </section>
+    </Reveal>
   );
 }

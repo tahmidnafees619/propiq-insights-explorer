@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
+import { BlueprintBackground } from "@/components/background/BlueprintBackground";
 
 function NotFoundComponent() {
   return (
@@ -104,7 +105,9 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen flex flex-col">
+      {/* Outside the route tree, so navigating never re-drafts the drawing. */}
+      <BlueprintBackground />
+      <div className="relative z-10 min-h-screen flex flex-col">
         <Navbar />
         <div className="flex flex-1">
           <Sidebar />

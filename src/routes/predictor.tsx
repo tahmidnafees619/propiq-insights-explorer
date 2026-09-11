@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, Info } from "lucide-react";
 
@@ -5,11 +6,13 @@ import { FeatureImportanceChart } from "@/components/charts/FeatureImportanceCha
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ConfidenceGauge } from "@/components/predictor/ConfidenceGauge";
 import { ComparableSales } from "@/components/predictor/ComparableSales";
+import { FloorPlanSchematic } from "@/components/predictor/FloorPlanSchematic";
 import { PredictionResult } from "@/components/predictor/PredictionResult";
 import { PropertyForm } from "@/components/predictor/PropertyForm";
 import { ValueBreakdown } from "@/components/predictor/ValueBreakdown";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { usePredict } from "@/hooks/usePredict";
+import { DEFAULT_PLAN_DRAFT, toPlanInput } from "@/lib/floorplan";
 
 export const Route = createFileRoute("/predictor")({
   head: () => ({
@@ -28,6 +31,15 @@ function PredictorPage() {
   const predict = usePredict();
   const result = predict.data;
 
+  // The form owns its fields; it reports a draft up on every edit so the
+  // schematic can redraw without lifting fifteen pieces of state.
+  const [draft, setDraft] = useState(DEFAULT_PLAN_DRAFT);
+  // Stable identity, or the form's effect would fire on every parent render.
+  const handleDraft = useCallback(
+    (next: Parameters<typeof toPlanInput>[0]) => setDraft(toPlanInput(next)),
+    [],
+  );
+
   return (
     <PageWrapper>
       <div className="mb-8">
@@ -39,9 +51,17 @@ function PredictorPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <PropertyForm onSubmit={(input) => predict.mutate(input)} loading={predict.isPending} />
+        <PropertyForm
+          onSubmit={(input) => predict.mutate(input)}
+          onDraftChange={handleDraft}
+          loading={predict.isPending}
+        />
 
         <div className="space-y-4">
+          {/* Always visible: the page previews the property being configured
+              rather than showing an empty frame until a result arrives. */}
+          <FloorPlanSchematic draft={draft} />
+
           {predict.isPending && <PredictingState />}
 
           {/* The predictor never falls back to demo data: a fabricated price
@@ -50,10 +70,10 @@ function PredictorPage() {
           {!predict.isPending && predict.isError && <PredictionError error={predict.error} />}
 
           {!predict.isPending && !predict.isError && !result && (
-            <div className="card-surface gradient-top-border flex min-h-[500px] items-center justify-center">
+            <div className="card-surface flex items-center justify-center px-6 py-10">
               <EmptyState
                 title="No prediction yet"
-                description="Configure property details on the left and click Analyze to see the estimated value, confidence range, and key value drivers."
+                description="Adjust the property on the left — the schematic updates as you go — then run the model for an estimate, confidence range and comparable sales."
               />
             </div>
           )}

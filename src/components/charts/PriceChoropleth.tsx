@@ -7,9 +7,12 @@
  */
 
 import { useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 import geo from "@/data/king-county-zips.json";
+import { useMotionEnabled } from "@/components/motion";
 import { useZipcodeStats } from "@/hooks/useZipcodeStats";
+import { DURATION, EASE } from "@/lib/motion";
 import { fmtCompact, fmtCurrency, fmtNumber } from "@/lib/formatters";
 import type { ZipcodeStat } from "@/types";
 
@@ -113,6 +116,15 @@ const ZIP_PATHS: Array<{ zip: string; d: string }> = (() => {
   }));
 })();
 
+/**
+ * Gap between each ZIP filling in, in seconds.
+ *
+ * Seventy ZIPs at this spacing build the map in a little under a second —
+ * quick enough not to delay reading it, slow enough to see the price gradient
+ * sweep across the county.
+ */
+const PRICE_FILL_STAGGER = 0.013;
+
 /** Interior break points splitting `values` into `bins` equal-count groups. */
 function quantileBreaks(values: number[], bins: number): number[] {
   const sorted = [...values].sort((a, b) => a - b);
@@ -128,18 +140,23 @@ function quantileBreaks(values: number[], bins: number): number[] {
 
 export function PriceChoropleth() {
   const { data } = useZipcodeStats();
+  const enabled = useMotionEnabled();
   const [hovered, setHovered] = useState<ZipcodeStat | null>(null);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { byZip, breaks } = useMemo(() => {
+  const { byZip, breaks, rankOf } = useMemo(() => {
     const lookup = new Map(data.zipcodes.map((z) => [z.zipcode, z]));
+    // Cheapest first, so the map fills from the south county upward and the
+    // price gradient is legible as it builds rather than only once it lands.
+    const ranked = [...data.zipcodes].sort((a, b) => a.median_price - b.median_price);
     return {
       byZip: lookup,
       breaks: quantileBreaks(
         data.zipcodes.map((z) => z.median_price),
         BIN_COLORS.length,
       ),
+      rankOf: new Map(ranked.map((z, index) => [z.zipcode, index])),
     };
   }, [data]);
 
@@ -175,9 +192,10 @@ export function PriceChoropleth() {
         {ZIP_PATHS.map(({ zip, d }) => {
           const stat = byZip.get(zip);
           const active = hovered?.zipcode === zip;
-          return (
+          const rank = rankOf.get(zip) ?? 0;
+
+          const shape = (
             <path
-              key={zip}
               d={d}
               fillRule="evenodd"
               fill={stat ? colorFor(stat.median_price) : "#0F1830"}
@@ -189,6 +207,29 @@ export function PriceChoropleth() {
             >
               <title>{stat ? zip + " — " + fmtCurrency(stat.median_price) : zip}</title>
             </path>
+          );
+
+          if (!enabled) return <g key={zip}>{shape}</g>;
+
+          /*
+           * The entrance lives on a wrapping group so the path keeps its own
+           * opacity for the hover dimming. Sharing one opacity between an
+           * animation and a hover state would let Framer seize the value.
+           */
+          return (
+            <motion.g
+              key={zip}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{
+                duration: DURATION.base,
+                ease: EASE.out,
+                delay: rank * PRICE_FILL_STAGGER,
+              }}
+            >
+              {shape}
+            </motion.g>
           );
         })}
       </svg>

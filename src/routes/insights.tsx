@@ -8,6 +8,7 @@ import { useFeatureImportance } from "@/hooks/useFeatureImportance";
 import { useStats } from "@/hooks/useStats";
 import { useZipcodeStats } from "@/hooks/useZipcodeStats";
 import { DataSourceBadge } from "@/components/shared/DataSourceBadge";
+import { Reveal } from "@/components/motion";
 import { fmtCompact } from "@/lib/formatters";
 
 export const Route = createFileRoute("/insights")({
@@ -87,7 +88,7 @@ function InsightsPage() {
         <DataSourceBadge isDemo={isDemo} />
       </div>
 
-      <section className="mb-8">
+      <Reveal className="mb-8">
         <div className="label-mute mb-3">Market Overview</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <InsightCard
@@ -112,9 +113,9 @@ function InsightsPage() {
             body={`Latitude and longitude alone account for ${locationShare.toFixed(1)}% of the model's predictive power, more than any single physical attribute.`}
           />
         </div>
-      </section>
+      </Reveal>
 
-      <section className="mb-8">
+      <Reveal className="mb-8">
         <div className="label-mute mb-3">What Drives Price?</div>
         <div className="card-surface gradient-top-border p-6 space-y-3">
           {data.map((f, i) => (
@@ -144,9 +145,9 @@ function InsightsPage() {
             </div>
           ))}
         </div>
-      </section>
+      </Reveal>
 
-      <section className="mb-8">
+      <Reveal className="mb-8">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
             <div className="label-mute">Median Price by ZIP Code</div>
@@ -169,12 +170,12 @@ function InsightsPage() {
         <div className="card-surface gradient-top-border p-4 sm:p-6">
           <PriceChoropleth />
         </div>
-      </section>
+      </Reveal>
 
-      <section>
+      <Reveal>
         <div className="label-mute mb-3">Seasonal Patterns</div>
         <SeasonalTrendChart variant="full" />
-      </section>
+      </Reveal>
     </PageWrapper>
   );
 }
