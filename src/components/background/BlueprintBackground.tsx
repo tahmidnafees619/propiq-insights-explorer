@@ -68,7 +68,7 @@ const LAMP_FALLOFF =
   `circle ${LAMP_RADIUS}px at var(--lamp-x) var(--lamp-y), ` +
   "#000 0%, rgba(0,0,0,0.72) 40%, rgba(0,0,0,0.22) 64%, transparent 80%";
 
-const STROKE = "#3B82F6";
+const STROKE = "#2F99DA";
 
 /** Opacity per element class. Low enough never to compete with content. */
 const INK = {
@@ -169,7 +169,7 @@ export function BlueprintBackground() {
             <motion.div
               className="absolute inset-0"
               style={{
-                background: `radial-gradient(circle ${LAMP_RADIUS}px at var(--lamp-x) var(--lamp-y), rgba(59,130,246,0.055) 0%, rgba(59,130,246,0.02) 46%, transparent 74%)`,
+                background: `radial-gradient(circle ${LAMP_RADIUS}px at var(--lamp-x) var(--lamp-y), rgba(47,153,218,0.055) 0%, rgba(47,153,218,0.02) 46%, transparent 74%)`,
                 ["--lamp-x" as string]: lampCssX,
                 ["--lamp-y" as string]: lampCssY,
               }}
@@ -196,7 +196,7 @@ export function BlueprintBackground() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 78% 62% at 50% 42%, rgba(6,11,24,0.9) 0%, rgba(6,11,24,0.5) 46%, transparent 100%)",
+            "radial-gradient(ellipse 78% 62% at 50% 42%, rgba(7,13,16,0.9) 0%, rgba(7,13,16,0.5) 46%, transparent 100%)",
         }}
       />
     </div>
@@ -273,10 +273,10 @@ function DraftingGrid({
         x,
         y,
         backgroundImage: `
-          linear-gradient(to right, rgba(59,130,246,0.055) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(59,130,246,0.055) 1px, transparent 1px),
-          linear-gradient(to right, rgba(59,130,246,0.028) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(59,130,246,0.028) 1px, transparent 1px)
+          linear-gradient(to right, rgba(47,153,218,0.055) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(47,153,218,0.055) 1px, transparent 1px),
+          linear-gradient(to right, rgba(47,153,218,0.028) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(47,153,218,0.028) 1px, transparent 1px)
         `,
         backgroundSize: "160px 160px, 160px 160px, 32px 32px, 32px 32px",
       }}

@@ -73,7 +73,7 @@ export function SpotlightCard({ children, className = "", radius = 320, intensit
         className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] transition-opacity duration-300"
         style={{
           opacity: "var(--spot-on)",
-          background: `radial-gradient(circle ${radius}px at var(--spot-x) var(--spot-y), rgba(59,130,246,${intensity}) 0%, transparent 70%)`,
+          background: `radial-gradient(circle ${radius}px at var(--spot-x) var(--spot-y), rgba(47,153,218,${intensity}) 0%, transparent 70%)`,
         }}
       />
       {/* Border catching the light, masked to a hairline at the edge. */}
@@ -83,7 +83,7 @@ export function SpotlightCard({ children, className = "", radius = 320, intensit
         style={{
           opacity: "var(--spot-on)",
           padding: 1,
-          background: `radial-gradient(circle ${radius * 0.7}px at var(--spot-x) var(--spot-y), rgba(59,130,246,0.55) 0%, transparent 65%)`,
+          background: `radial-gradient(circle ${radius * 0.7}px at var(--spot-x) var(--spot-y), rgba(47,153,218,0.55) 0%, transparent 65%)`,
           WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
           WebkitMaskComposite: "xor",
           mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",

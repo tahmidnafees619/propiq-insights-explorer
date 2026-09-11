@@ -45,7 +45,7 @@ function AboutPage() {
           {["Python", "Scikit-Learn", "FastAPI", "React", "TypeScript"].map((t) => (
             <span
               key={t}
-              className="text-xs px-3 py-1 rounded-full border border-[#1E2D4A] text-muted-foreground"
+              className="text-xs px-3 py-1 rounded-full border border-[#28363E] text-muted-foreground"
             >
               {t}
             </span>
@@ -103,16 +103,16 @@ function AboutPage() {
             return (
               <div key={s.n} className="card-surface gradient-top-border p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#3B82F6] text-white text-sm font-bold flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-[#2F99DA] text-white text-sm font-bold flex items-center justify-center">
                     {s.n}
                   </div>
-                  <Icon size={18} className="text-[#3B82F6]" />
+                  <Icon size={18} className="text-[#2F99DA]" />
                 </div>
                 <h3 className="text-base font-semibold text-foreground mb-3">{s.title}</h3>
                 <ul className="space-y-1.5">
                   {s.items.map((it) => (
                     <li key={it} className="text-xs text-muted-foreground flex gap-2">
-                      <span className="text-[#3B82F6]">›</span> {it}
+                      <span className="text-[#2F99DA]">›</span> {it}
                     </li>
                   ))}
                 </ul>
@@ -149,7 +149,7 @@ function AboutPage() {
         <div className="card-surface gradient-top-border overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-muted-foreground border-b border-[#1E2D4A]">
+              <tr className="text-muted-foreground border-b border-[#28363E]">
                 <th className="text-left p-4 font-medium text-xs uppercase tracking-wider">
                   Model
                 </th>
@@ -168,12 +168,12 @@ function AboutPage() {
                 return (
                   <tr
                     key={row.model}
-                    className={`border-b border-[#1E2D4A] last:border-b-0 ${best ? "bg-[#3B82F6]/10" : ""}`}
+                    className={`border-b border-[#28363E] last:border-b-0 ${best ? "bg-[#2F99DA]/10" : ""}`}
                   >
                     <td className="p-4 font-medium text-foreground">
                       {row.model}
                       {best && (
-                        <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-[#3B82F6] text-white">
+                        <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-[#2F99DA] text-white">
                           BEST
                         </span>
                       )}
@@ -204,11 +204,11 @@ function AboutPage() {
             {["CSV Data", "Python Cleaning", "SQLite DB", "FastAPI", "React UI"].map(
               (step, i, arr) => (
                 <div key={step} className="flex items-center gap-2 md:gap-4">
-                  <div className="px-4 py-3 rounded-xl border border-[#1E2D4A] bg-[#0A1120] text-sm text-foreground font-medium hover:border-[#3B82F6] transition">
+                  <div className="px-4 py-3 rounded-xl border border-[#28363E] bg-[#0C1318] text-sm text-foreground font-medium hover:border-[#2F99DA] transition">
                     {step}
                   </div>
                   {i < arr.length - 1 && (
-                    <svg width="20" height="12" viewBox="0 0 20 12" className="text-[#3B82F6]">
+                    <svg width="20" height="12" viewBox="0 0 20 12" className="text-[#2F99DA]">
                       <path
                         d="M0 6 L18 6 M14 1 L19 6 L14 11"
                         stroke="currentColor"
@@ -229,12 +229,12 @@ function AboutPage() {
       <Section title="Tech Stack">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
-            { name: "Python", icon: Code2, desc: "Data pipeline & modeling", color: "#3B82F6" },
-            { name: "FastAPI", icon: Boxes, desc: "Async prediction API", color: "#10B981" },
-            { name: "Scikit-Learn", icon: Cpu, desc: "Gradient Boosting model", color: "#F59E0B" },
-            { name: "SQLite", icon: Database, desc: "Embedded property store", color: "#3B82F6" },
-            { name: "React", icon: Code2, desc: "Dashboard frontend", color: "#10B981" },
-            { name: "Recharts", icon: BarChart3, desc: "Data visualization", color: "#F59E0B" },
+            { name: "Python", icon: Code2, desc: "Data pipeline & modeling", color: "#2F99DA" },
+            { name: "FastAPI", icon: Boxes, desc: "Async prediction API", color: "#3DAE91" },
+            { name: "Scikit-Learn", icon: Cpu, desc: "Gradient Boosting model", color: "#D0A74E" },
+            { name: "SQLite", icon: Database, desc: "Embedded property store", color: "#2F99DA" },
+            { name: "React", icon: Code2, desc: "Dashboard frontend", color: "#3DAE91" },
+            { name: "Recharts", icon: BarChart3, desc: "Data visualization", color: "#D0A74E" },
           ].map((t) => {
             const Icon = t.icon;
             return (
@@ -264,7 +264,7 @@ function AboutPage() {
               href="https://www.linkedin.com/in/md-tahmidur-rahman-nafees-04a6a3227/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#1E2D4A] hover:border-[#3B82F6] text-foreground transition btn-press hover-lift"
+              className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#28363E] hover:border-[#2F99DA] text-foreground transition btn-press hover-lift"
             >
               <Linkedin size={14} /> LinkedIn
             </a>
@@ -272,7 +272,7 @@ function AboutPage() {
               href="https://github.com/tahmidnafees619/propiq-insights-explorer-main"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#1E2D4A] hover:border-[#3B82F6] text-foreground transition btn-press hover-lift"
+              className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#28363E] hover:border-[#2F99DA] text-foreground transition btn-press hover-lift"
             >
               <Github size={14} /> View on GitHub
             </a>
@@ -280,7 +280,7 @@ function AboutPage() {
         </div>
       </Section>
 
-      <footer className="mt-16 pt-8 border-t border-[#1E2D4A] flex flex-wrap items-center justify-between gap-4">
+      <footer className="mt-16 pt-8 border-t border-[#28363E] flex flex-wrap items-center justify-between gap-4">
         <p className="text-xs text-muted-foreground">
           Built by Md. Tahmidur Rahman Nafees · King County, WA dataset
         </p>
@@ -288,7 +288,7 @@ function AboutPage() {
           href="https://github.com/tahmidnafees619/propiq-insights-explorer-main"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#1E2D4A] hover:border-[#3B82F6] text-foreground transition btn-press hover-lift"
+          className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-xl border border-[#28363E] hover:border-[#2F99DA] text-foreground transition btn-press hover-lift"
         >
           <Github size={14} /> View on GitHub
         </a>

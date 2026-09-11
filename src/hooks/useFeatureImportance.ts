@@ -5,18 +5,18 @@
  * recorded importances if the API is unreachable.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { apiGet } from '@/lib/api';
-import { DEMO_FEATURE_IMPORTANCE } from '@/lib/demo-data';
-import type { FeatureImportance } from '@/types';
+import { apiGet } from "@/lib/api";
+import { DEMO_FEATURE_IMPORTANCE } from "@/lib/demo-data";
+import type { FeatureImportance } from "@/types";
 
 export function useFeatureImportance(limit?: number) {
   const query = useQuery({
-    queryKey: ['feature-importance', limit ?? 'all'],
+    queryKey: ["feature-importance", limit ?? "all"],
     queryFn: async (): Promise<FeatureImportance[]> => {
       try {
-        const path = limit ? `/api/feature-importance?limit=${limit}` : '/api/feature-importance';
+        const path = limit ? `/api/feature-importance?limit=${limit}` : "/api/feature-importance";
         return await apiGet<FeatureImportance[]>(path);
       } catch {
         return limit ? DEMO_FEATURE_IMPORTANCE.slice(0, limit) : DEMO_FEATURE_IMPORTANCE;

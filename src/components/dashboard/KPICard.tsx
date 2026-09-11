@@ -14,10 +14,10 @@ interface Props {
 }
 
 const accents = {
-  blue: { color: "#3B82F6", bg: "rgba(59,130,246,0.12)" },
-  green: { color: "#10B981", bg: "rgba(16,185,129,0.12)" },
-  amber: { color: "#F59E0B", bg: "rgba(245,158,11,0.12)" },
-  red: { color: "#EF4444", bg: "rgba(239,68,68,0.12)" },
+  blue: { color: "#2F99DA", bg: "rgba(47,153,218,0.12)" },
+  green: { color: "#3DAE91", bg: "rgba(61,174,145,0.12)" },
+  amber: { color: "#D0A74E", bg: "rgba(208,167,78,0.12)" },
+  red: { color: "#D5533F", bg: "rgba(213,83,63,0.12)" },
 };
 
 export function KPICard({

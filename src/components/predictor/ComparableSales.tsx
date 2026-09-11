@@ -63,8 +63,8 @@ export function ComparableSales({ result }: { result: PredictionResult }) {
       </p>
 
       {isWaterfront && (
-        <div className="mb-5 flex items-start gap-2 rounded-lg border border-[#3B82F6]/30 bg-[#3B82F6]/10 px-3 py-2 text-[11px] text-muted-foreground">
-          <Waves size={13} className="mt-px shrink-0 text-[#3B82F6]" />
+        <div className="mb-5 flex items-start gap-2 rounded-lg border border-[#2F99DA]/30 bg-[#2F99DA]/10 px-3 py-2 text-[11px] text-muted-foreground">
+          <Waves size={13} className="mt-px shrink-0 text-[#2F99DA]" />
           <span>
             Matched against waterfront sales only. Waterfront carries a{" "}
             <span className="font-medium text-foreground">+213%</span> premium in this market, so
@@ -75,10 +75,10 @@ export function ComparableSales({ result }: { result: PredictionResult }) {
       )}
 
       {/* Estimate against what comparable homes actually sold for. */}
-      <div className="mb-5 rounded-xl border border-[#1E2D4A] bg-[#0A1120] p-4">
+      <div className="mb-5 rounded-xl border border-[#28363E] bg-[#0C1318] p-4">
         <div
           className={`mb-3 flex items-center gap-2 text-xs font-medium ${
-            inRange ? "text-[#10B981]" : "text-[#F59E0B]"
+            inRange ? "text-[#3DAE91]" : "text-[#D0A74E]"
           }`}
         >
           {inRange ? <Check size={14} /> : <Info size={14} />}
@@ -87,10 +87,10 @@ export function ComparableSales({ result }: { result: PredictionResult }) {
             : "The estimate falls outside the range these homes sold for"}
         </div>
 
-        <div className="relative h-2 rounded-full bg-[#132038]">
-          <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#3B82F6] to-[#10B981] opacity-70" />
+        <div className="relative h-2 rounded-full bg-[#192329]">
+          <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-gradient-to-r from-[#0D3B63] via-[#2F99DA] to-[#3DAE91] opacity-70" />
           <div
-            className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-foreground shadow-[0_0_10px_rgba(241,245,249,0.8)]"
+            className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-foreground shadow-[0_0_10px_rgba(237,241,242,0.8)]"
             style={{ left: `calc(${estimatePosition}% - 1.5px)` }}
           />
         </div>
@@ -103,7 +103,7 @@ export function ComparableSales({ result }: { result: PredictionResult }) {
           <span>{fmtCurrency(summary.high_price)}</span>
         </div>
 
-        <div className="mt-3 border-t border-[#1E2D4A] pt-3 text-[11px] text-muted-foreground">
+        <div className="mt-3 border-t border-[#28363E] pt-3 text-[11px] text-muted-foreground">
           Median comparable sale{" "}
           <span className="font-medium text-foreground">{fmtCurrency(summary.median_price)}</span>
         </div>
@@ -112,7 +112,7 @@ export function ComparableSales({ result }: { result: PredictionResult }) {
       <div className="-mx-2 overflow-x-auto">
         <table className="w-full min-w-[560px] text-sm">
           <thead>
-            <tr className="border-b border-[#1E2D4A] text-muted-foreground">
+            <tr className="border-b border-[#28363E] text-muted-foreground">
               <th className="p-2 text-left text-[10px] font-medium uppercase tracking-wider">
                 Match
               </th>
@@ -138,12 +138,12 @@ export function ComparableSales({ result }: { result: PredictionResult }) {
           </thead>
           <tbody>
             {comparables.map((comp) => (
-              <tr key={comp.id} className="border-b border-[#1E2D4A] last:border-b-0">
+              <tr key={comp.id} className="border-b border-[#28363E] last:border-b-0">
                 <td className="p-2">
                   <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-10 overflow-hidden rounded-full bg-[#132038]">
+                    <div className="h-1.5 w-10 overflow-hidden rounded-full bg-[#192329]">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-[#3B82F6] to-[#10B981]"
+                        className="h-full rounded-full bg-gradient-to-r from-[#2F99DA] to-[#3DAE91]"
                         style={{ width: `${comp.similarity}%` }}
                       />
                     </div>

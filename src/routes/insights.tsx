@@ -121,17 +121,17 @@ function InsightsPage() {
           {data.map((f, i) => (
             <div
               key={f.feature}
-              className="grid grid-cols-12 gap-3 items-center py-2 border-b border-[#1E2D4A] last:border-b-0"
+              className="grid grid-cols-12 gap-3 items-center py-2 border-b border-[#28363E] last:border-b-0"
             >
-              <div className="col-span-1 text-xs font-mono text-[#3B82F6]">#{i + 1}</div>
+              <div className="col-span-1 text-xs font-mono text-[#2F99DA]">#{i + 1}</div>
               <div className="col-span-3 text-sm font-medium text-foreground">{f.label}</div>
               <div className="col-span-4">
-                <div className="h-2 rounded-full bg-[#1E2D4A] overflow-hidden">
+                <div className="h-2 rounded-full bg-[#28363E] overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
                       width: `${(f.importance / max) * 100}%`,
-                      background: i < 3 ? "linear-gradient(90deg,#10B981,#3B82F6)" : "#3B82F6",
+                      background: i < 3 ? "linear-gradient(90deg,#3DAE91,#2F99DA)" : "#2F99DA",
                     }}
                   />
                 </div>

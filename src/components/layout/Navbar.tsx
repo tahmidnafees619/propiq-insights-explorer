@@ -21,15 +21,15 @@ export function Navbar() {
   return (
     <header
       className="sticky top-0 z-50 backdrop-blur-xl border-b"
-      style={{ background: "rgba(6,11,24,0.8)", borderColor: "#1E2D4A" }}
+      style={{ background: "rgba(7,13,16,0.8)", borderColor: "#28363E" }}
     >
       <div className="flex items-center justify-between h-14 px-6">
         <Link to="/" className="flex items-center gap-2 group">
           <span className="text-lg font-bold tracking-tight">
             <span className="text-foreground">Prop</span>
-            <span className="text-[#3B82F6]">IQ</span>
+            <span className="text-[#2F99DA]">IQ</span>
           </span>
-          <Home size={14} className="text-[#3B82F6]" />
+          <Home size={14} className="text-[#2F99DA]" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -52,7 +52,7 @@ export function Navbar() {
                 {active && (
                   <motion.span
                     layoutId="navbar-pill"
-                    className="absolute inset-0 rounded-lg bg-[#111D35]"
+                    className="absolute inset-0 rounded-lg bg-[#192329]"
                     transition={
                       enabled ? { type: "spring", ...SPRING.responsive } : { duration: 0 }
                     }
@@ -66,14 +66,14 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="w-2 h-2 rounded-full bg-[#10B981] pulse-dot" />
+            <span className="w-2 h-2 rounded-full bg-[#3DAE91] pulse-dot" />
             Model Live
           </div>
           <a
             href={REPO}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border border-[#1E2D4A] hover:border-[#3B82F6] hover:text-foreground text-muted-foreground transition btn-press hover-lift"
+            className="hidden sm:flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border border-[#28363E] hover:border-[#2F99DA] hover:text-foreground text-muted-foreground transition btn-press hover-lift"
           >
             <Github size={14} /> GitHub
           </a>

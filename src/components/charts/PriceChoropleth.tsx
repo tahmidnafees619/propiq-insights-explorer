@@ -38,14 +38,14 @@ const PAD = 14;
  * 68 of the 70 ZIPs in the same shade and show nothing.
  */
 const BIN_COLORS = [
-  "#14304F",
-  "#1B4A78",
-  "#22679F",
-  "#2B86B8",
-  "#2AA08D",
-  "#57B85F",
-  "#DDA62F",
-  "#F0801E",
+  "#122E49",
+  "#18486D",
+  "#1E6794",
+  "#2C8DBA",
+  "#45BAA3",
+  "#85B356",
+  "#CEBE5A",
+  "#D6AC51",
 ];
 
 /** Web Mercator, normalised to the unit square. */
@@ -198,8 +198,8 @@ export function PriceChoropleth() {
             <path
               d={d}
               fillRule="evenodd"
-              fill={stat ? colorFor(stat.median_price) : "#0F1830"}
-              stroke={active ? "#F1F5F9" : "#060B18"}
+              fill={stat ? colorFor(stat.median_price) : "#111A1F"}
+              stroke={active ? "#EDF1F2" : "#070D10"}
               strokeWidth={active ? 2 : 0.6}
               opacity={hovered && !active ? 0.55 : 1}
               className="cursor-pointer transition-[stroke,opacity] duration-150"
@@ -236,7 +236,7 @@ export function PriceChoropleth() {
 
       {hovered && (
         <div
-          className="pointer-events-none absolute z-10 rounded-lg border border-[#1E2D4A] bg-[#0A1120]/95 px-3 py-2 shadow-xl backdrop-blur-sm"
+          className="pointer-events-none absolute z-10 rounded-lg border border-[#28363E] bg-[#0C1318]/95 px-3 py-2 shadow-xl backdrop-blur-sm"
           style={{
             left: Math.min(cursor.x + 14, VIEW_W - 150),
             top: Math.max(cursor.y - 12, 0),

@@ -45,9 +45,9 @@ export function PropertyForm({ onSubmit, onDraftChange, loading }: Props) {
   const above = sqft - cappedBasement;
 
   const gradeColor = useMemo(() => {
-    if (grade <= 4) return "#EF4444";
-    if (grade <= 8) return "#F59E0B";
-    return "#10B981";
+    if (grade <= 4) return "#D5533F";
+    if (grade <= 8) return "#D0A74E";
+    return "#3DAE91";
   }, [grade]);
 
   // One source of truth for the payload, so the schematic previews exactly
@@ -100,7 +100,7 @@ export function PropertyForm({ onSubmit, onDraftChange, loading }: Props) {
       className={`card-surface gradient-top-border p-6 transition-all duration-300 ${water ? "card-glow" : ""}`}
     >
       <div className="flex items-center gap-2 mb-6">
-        <Settings size={18} className="text-[#3B82F6]" />
+        <Settings size={18} className="text-[#2F99DA]" />
         <h2 className="text-base font-semibold text-foreground">Configure Property Details</h2>
       </div>
 
@@ -162,7 +162,7 @@ export function PropertyForm({ onSubmit, onDraftChange, loading }: Props) {
           max={5}
           value={cond}
           onChange={setCond}
-          color="#3B82F6"
+          color="#2F99DA"
           legend={["Poor", "OK", "Excellent"]}
         />
       </Section>
@@ -176,7 +176,7 @@ export function PropertyForm({ onSubmit, onDraftChange, loading }: Props) {
           <button
             onClick={() => setWater((w) => !w)}
             className="relative w-12 h-6 rounded-full transition"
-            style={{ background: water ? "#3B82F6" : "#1E2D4A" }}
+            style={{ background: water ? "#2F99DA" : "#28363E" }}
           >
             <span
               className="absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all"
@@ -186,12 +186,12 @@ export function PropertyForm({ onSubmit, onDraftChange, loading }: Props) {
         </div>
         <div>
           <div className="label-mute mb-2">View Quality</div>
-          <div className="grid grid-cols-5 gap-1 p-1 rounded-xl bg-[#0A1120] border border-[#1E2D4A]">
+          <div className="grid grid-cols-5 gap-1 p-1 rounded-xl bg-[#0C1318] border border-[#28363E]">
             {views.map((v, i) => (
               <button
                 key={v}
                 onClick={() => setView(i)}
-                className={`text-[11px] py-1.5 rounded-lg transition btn-press ${view === i ? "bg-[#3B82F6] text-white" : "text-muted-foreground hover:text-foreground"}`}
+                className={`text-[11px] py-1.5 rounded-lg transition btn-press ${view === i ? "bg-[#2F99DA] text-white" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {v}
               </button>
@@ -211,7 +211,7 @@ export function PropertyForm({ onSubmit, onDraftChange, loading }: Props) {
             min={1900}
             max={currentYear}
             onChange={(e) => setYrBuilt(clamp(Number(e.target.value), 1900, currentYear))}
-            className="w-full bg-[#0A1120] border border-[#1E2D4A] rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:border-[#3B82F6] transition"
+            className="w-full bg-[#0C1318] border border-[#28363E] rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:border-[#2F99DA] transition"
           />
         </div>
         <SliderRow
@@ -255,10 +255,16 @@ export function PropertyForm({ onSubmit, onDraftChange, loading }: Props) {
       <MagneticButton
         disabled={loading}
         onClick={() => onSubmit(draft)}
-        className="w-full h-14 rounded-xl font-semibold text-white text-sm disabled:opacity-70 flex items-center justify-center gap-2 mt-4"
+        className="w-full h-14 rounded-xl font-semibold text-sm disabled:opacity-70 flex items-center justify-center gap-2 mt-4"
+        /*
+         * Brass appears nowhere else in the interface, which is precisely what
+         * makes it read as the primary action. Dark text on brass measures
+         * 8.7:1 — white would sit under 2:1 and fail outright.
+         */
         style={{
-          background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
-          boxShadow: "0 0 24px -6px rgba(59,130,246,0.6)",
+          background: "linear-gradient(135deg, var(--brass-400) 0%, var(--brass-600) 100%)",
+          boxShadow: "0 0 28px -8px rgba(208,167,78,0.55)",
+          color: "var(--ground)",
         }}
       >
         {loading ? (
@@ -277,7 +283,7 @@ export function PropertyForm({ onSubmit, onDraftChange, loading }: Props) {
 
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="py-4 border-t border-[#1E2D4A] first:border-t-0 space-y-4">
+    <div className="py-4 border-t border-[#28363E] first:border-t-0 space-y-4">
       <div className="label-mute">{label}</div>
       {children}
     </div>
@@ -306,14 +312,14 @@ function SliderRow({
     <div>
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-muted-foreground">{label}</span>
-        <span className="text-xs font-medium text-foreground px-2 py-0.5 rounded-md bg-[#1E2D4A]">
+        <span className="text-xs font-medium text-foreground px-2 py-0.5 rounded-md bg-[#28363E]">
           {value.toLocaleString()} {suffix}
         </span>
       </div>
-      <div className="relative h-2 rounded-full bg-[#1E2D4A] overflow-hidden">
+      <div className="relative h-2 rounded-full bg-[#28363E] overflow-hidden">
         <div
           className="absolute inset-y-0 left-0 rounded-full"
-          style={{ width: `${pct}%`, background: "linear-gradient(90deg, #3B82F6, #10B981)" }}
+          style={{ width: `${pct}%`, background: "linear-gradient(90deg, #2F99DA, #3DAE91)" }}
         />
       </div>
       <input
@@ -366,7 +372,7 @@ function NumberInput({
         max={max}
         value={value}
         onChange={(e) => onChange(clamp(Number(e.target.value), min, max))}
-        className="w-full bg-[#0A1120] border border-[#1E2D4A] rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:border-[#3B82F6] transition"
+        className="w-full bg-[#0C1318] border border-[#28363E] rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:border-[#2F99DA] transition"
       />
     </div>
   );
@@ -379,7 +385,7 @@ function ReadOnlyValue({ label, value, hint }: { label: string; value: number; h
       <div className="label-mute mb-1">{label}</div>
       <div
         title={hint}
-        className="w-full rounded-xl border border-dashed border-[#1E2D4A] bg-[#0A1120]/60 px-3 py-2 text-sm text-muted-foreground"
+        className="w-full rounded-xl border border-dashed border-[#28363E] bg-[#0C1318]/60 px-3 py-2 text-sm text-muted-foreground"
       >
         {value.toLocaleString()}
       </div>
@@ -406,7 +412,7 @@ function PillRow({
           <button
             key={o}
             onClick={() => onChange(o)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition btn-press ${value === o ? "bg-[#3B82F6] text-white" : "bg-[#0A1120] border border-[#1E2D4A] text-muted-foreground hover:text-foreground hover:border-[#3B82F6]"}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition btn-press ${value === o ? "bg-[#2F99DA] text-white" : "bg-[#0C1318] border border-[#28363E] text-muted-foreground hover:text-foreground hover:border-[#2F99DA]"}`}
           >
             {o}
           </button>
@@ -445,12 +451,12 @@ function GradientSlider({
           {value}
         </span>
       </div>
-      <div className="relative h-2 rounded-full bg-[#1E2D4A] overflow-hidden">
+      <div className="relative h-2 rounded-full bg-[#28363E] overflow-hidden">
         <div
           className="absolute inset-y-0 left-0 rounded-full"
           style={{
             width: `${pct}%`,
-            background: `linear-gradient(90deg, #EF4444 0%, #F59E0B 50%, #10B981 100%)`,
+            background: `linear-gradient(90deg, #D5533F 0%, #D0A74E 50%, #3DAE91 100%)`,
           }}
         />
       </div>

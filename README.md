@@ -349,6 +349,26 @@ The suite covers the API contract, filtering and pagination, error envelopes, de
 
 ---
 
+## Design system
+
+The palette is built from drafting materials rather than assembled from a UI kit, and every ramp is derived in HSL rather than hand-picked, so hue stays constant while saturation falls off as lightness rises.
+
+| Role | Colour | Why |
+|---|---|---|
+| Neutrals | Hue 202, cyan-navy | Tailwind slate sits near 215 with a purple lean — the most recognisable default-palette tell in a dark UI |
+| Ink | **Cyanotype** `#2F99DA` | The pigment of an actual blueprint. Hue 203 against blue-500's 217, saturation 70 against its 91 |
+| Accent | **Aged brass** `#D0A74E` | Surveying instruments, not a warning triangle. Reserved for the primary action and nothing else |
+| Positive | **Verdigris** `#3DAE91` | Weathered copper |
+| Negative | **Iron oxide** `#D5533F` | |
+| Data | 9-step sequential ramp | Kept clear of the accent, so a chart series is never mistaken for something interactive |
+
+Two rules the components follow:
+
+- **One accent, rationed.** Brass appears on exactly one control in the app. That is what makes it read as emphasis rather than decoration.
+- **Quantities never borrow the UI palette.** Charts use the sequential ramp; interactive elements use ink.
+
+Every text pairing is checked against WCAG before it ships — all pass AA, most exceed AAA. Contrast for the shipped palette runs from 6.0:1 (negative text on a card) to 17.2:1 (primary text on the page ground).
+
 ## Tech stack
 
 **Frontend** — React 19 · TypeScript · TanStack Start/Router/Query · Tailwind CSS 4 · Recharts · Framer Motion · Vite 7

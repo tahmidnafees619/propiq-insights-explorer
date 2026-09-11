@@ -5,11 +5,11 @@
  * dataset if the API is unreachable.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { apiGet, toQuery } from '@/lib/api';
-import { DEMO_PROPERTIES } from '@/lib/demo-data';
-import type { Property, PropertyListResponse } from '@/types';
+import { apiGet, toQuery } from "@/lib/api";
+import { DEMO_PROPERTIES } from "@/lib/demo-data";
+import type { Property, PropertyListResponse } from "@/types";
 
 export interface UsePropertiesOptions {
   limit?: number;
@@ -27,7 +27,7 @@ const DEMO_RESPONSE: PropertyListResponse = {
   offset: 0,
   count: DEMO_PROPERTIES.length,
   has_more: false,
-  source: 'demo',
+  source: "demo",
   properties: DEMO_PROPERTIES,
 };
 
@@ -35,7 +35,7 @@ export function useProperties(options: UsePropertiesOptions = {}) {
   const { limit = 500, offset = 0 } = options;
 
   const query = useQuery({
-    queryKey: ['properties', options],
+    queryKey: ["properties", options],
     queryFn: async (): Promise<PropertyListResponse> => {
       const search = toQuery({
         limit,
@@ -64,6 +64,6 @@ export function useProperties(options: UsePropertiesOptions = {}) {
     /** The rows themselves, so callers can map without unwrapping. */
     data: response.properties as Property[],
     total: response.total,
-    isDemo: response.source === 'demo',
+    isDemo: response.source === "demo",
   };
 }

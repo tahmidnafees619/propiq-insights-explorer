@@ -39,29 +39,87 @@
 
 :root, .dark {
   --radius: 1rem;
-  --background: #060B18;
-  --surface: #0D1526;
-  --surface-elevated: #111D35;
-  --foreground: #F1F5F9;
-  --card: #0D1526;
-  --card-foreground: #F1F5F9;
-  --popover: #111D35;
-  --popover-foreground: #F1F5F9;
-  --primary: #3B82F6;
-  --primary-foreground: #ffffff;
-  --secondary: #111D35;
-  --secondary-foreground: #F1F5F9;
-  --muted: #111D35;
-  --muted-foreground: #94A3B8;
-  --accent: #111D35;
-  --accent-foreground: #F1F5F9;
-  --destructive: #EF4444;
-  --destructive-foreground: #ffffff;
-  --emerald: #10B981;
-  --warning: #F59E0B;
-  --border: #1E2D4A;
-  --input: #1E2D4A;
-  --ring: #3B82F6;
+
+  /*
+   * Neutrals. Hue 202, a cyan-navy: Tailwind slate sits near 215 with a purple
+   * lean, which is the single most recognisable default-palette tell in a dark
+   * UI. Saturation falls as lightness rises, so darks are tinted and text stays
+   * neutral — a ramp holding one saturation looks synthetic.
+   */
+  --ground: #070D10;
+  --surface: #0C1318;
+  --surface-2: #111A1F;
+  --surface-3: #192329;
+  --line: #28363E;
+  --line-strong: #394B56;
+
+  /*
+   * Cyanotype — the pigment of an actual blueprint. Hue 203 against blue-500's
+   * 217, saturation 70 against its 91. The hue shift reads as cyan rather than
+   * "default blue"; the lower saturation stops it looking like a hyperlink.
+   */
+  --ink-200: #ACD3EC;
+  --ink-300: #89C2E6;
+  --ink-400: #5CADE0;
+  --ink-500: #2F99DA;
+  --ink-600: #1E7BB8;
+  --ink-700: #155A8E;
+  --ink-800: #0D3B63;
+
+  /*
+   * Aged brass — surveying instruments, not a warning triangle. Reserved for
+   * the primary action and genuine emphasis; it appears nowhere else, which is
+   * what makes it read as emphasis at all.
+   */
+  --brass-300: #DDC992;
+  --brass-400: #D6B771;
+  --brass-500: #D0A74E;
+  --brass-600: #BC8A2F;
+
+  /* Weathered copper and iron oxide, so status belongs to the same material story. */
+  --verdigris-400: #5BC2AA;
+  --verdigris-500: #3DAE91;
+  --verdigris-600: #2E8A71;
+  --oxide-400: #DA7662;
+  --oxide-500: #D5533F;
+  --oxide-600: #BA3526;
+
+  /*
+   * Quantities get their own scale, kept clear of the UI accent so a chart
+   * series can never be mistaken for something interactive.
+   */
+  --data-1: #122E49;
+  --data-2: #18486D;
+  --data-3: #1E6794;
+  --data-4: #2C8DBA;
+  --data-5: #3DB0C2;
+  --data-6: #45BAA3;
+  --data-7: #85B356;
+  --data-8: #CEBE5A;
+  --data-9: #D6AC51;
+
+  /* Semantic aliases. Components reference these, never the ramps directly. */
+  --background: var(--ground);
+  --foreground: #EDF1F2;
+  --card: var(--surface-2);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface-3);
+  --popover-foreground: var(--foreground);
+  --primary: var(--ink-500);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--surface-3);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-3);
+  --muted-foreground: #91A2AC;
+  --accent: var(--brass-500);
+  --accent-foreground: var(--ground);
+  --destructive: var(--oxide-500);
+  --destructive-foreground: #FFFFFF;
+  --emerald: var(--verdigris-500);
+  --warning: var(--brass-500);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--ink-500);
 }
 
 @layer base {
@@ -69,8 +127,8 @@
   html, body { background-color: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); }
   body {
     background-image:
-      radial-gradient(circle at 20% 0%, rgba(59,130,246,0.08), transparent 50%),
-      radial-gradient(circle at 80% 100%, rgba(16,185,129,0.05), transparent 50%);
+      radial-gradient(circle at 20% 0%, rgba(47,153,218,0.08), transparent 50%),
+      radial-gradient(circle at 80% 100%, rgba(61,174,145,0.05), transparent 50%);
     min-height: 100vh;
   }
 }
@@ -84,28 +142,28 @@
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #060B18; }
-::-webkit-scrollbar-thumb { background: #1E2D4A; border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: #3B82F6; }
+::-webkit-scrollbar-track { background: #070D10; }
+::-webkit-scrollbar-thumb { background: #28363E; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #2F99DA; }
 
 /* Shimmer */
 @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
-.shimmer { background: linear-gradient(90deg, #0D1526 0%, #1E2D4A 50%, #0D1526 100%); background-size: 1000px 100%; animation: shimmer 2s infinite linear; }
+.shimmer { background: linear-gradient(90deg, #111A1F 0%, #28363E 50%, #111A1F 100%); background-size: 1000px 100%; animation: shimmer 2s infinite linear; }
 
 /* Card */
 .card-surface {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
-  box-shadow: 0 0 0 1px rgba(59,130,246,0.05), 0 8px 32px -8px rgba(0,0,0,0.4);
+  box-shadow: 0 0 0 1px rgba(47,153,218,0.05), 0 8px 32px -8px rgba(0,0,0,0.4);
   transition: all 200ms ease;
 }
-.card-glow { box-shadow: 0 0 0 1px rgba(59,130,246,0.25), 0 0 40px -10px rgba(59,130,246,0.35); }
+.card-glow { box-shadow: 0 0 0 1px rgba(47,153,218,0.25), 0 0 40px -10px rgba(47,153,218,0.35); }
 
 .gradient-top-border { position: relative; }
 .gradient-top-border::before {
   content: ""; position: absolute; top: 0; left: 1rem; right: 1rem; height: 2px;
-  background: linear-gradient(90deg, #3B82F6, transparent);
+  background: linear-gradient(90deg, #2F99DA, transparent);
   border-radius: 2px;
 }
 

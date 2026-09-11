@@ -42,6 +42,10 @@ First production release. The application was audited end to end; this release f
 
 ### Changed
 
+- **Rewrote the floor-plan schematic as a rules engine.** It previously subdivided the footprint as a treemap, which tiled perfectly and looked nothing like a home — bathrooms between bedrooms, no circulation, nothing opening off anything. A corridor template fixed that but produced one rigid plan that only grew more columns. It now generates plans from residential design rules: the room programme grows with floor area (dining, utility, study), circulation changes with size (no hall in a small flat, a corridor in a mid-size home, a double-loaded spine in a large one), and bathrooms are *allocated* rather than counted — a half bath is a guest WC in the public zone, ensuites attach to bedrooms and are drawn smaller than a shared family bathroom, except above grade 10 where the primary suite becomes the largest bathroom in the house. Arrangement is chosen by a seed derived from the property, with a Shuffle control for alternative arrangements of the same brief. All 10,368 input/shuffle combinations are checked against layout invariants: no overlaps, everything inside the footprint, and every habitable room on an exterior wall for a window.
+
+- **Replaced the entire colour palette.** The interface previously ran on Tailwind's default swatches — `blue-500`, `emerald-500`, `amber-500`, `red-500` and stock slate — which is the most recognisable "scaffolded project" signal there is. It now uses a palette derived from drafting materials: cyanotype blue, aged brass, verdigris and iron oxide, with a custom cyan-navy neutral ramp. Ramps are generated in HSL rather than hand-picked, and every text pairing is verified against WCAG (all pass AA, most exceed AAA). Brass is reserved for a single primary action, and quantitative charts were moved onto a dedicated sequential scale so a data series can never be confused with an interactive element.
+
 - **Retrained the model.** Adding the room features and tuning the estimator improved held-out accuracy substantially:
 
   | Metric | Before | After |

@@ -13,7 +13,7 @@ export function MobileTabBar() {
   return (
     <nav
       className="lg:hidden fixed bottom-0 inset-x-0 z-50 grid grid-cols-4 backdrop-blur-xl border-t"
-      style={{ background: "rgba(6,11,24,0.9)", borderColor: "#1E2D4A" }}
+      style={{ background: "rgba(7,13,16,0.9)", borderColor: "#28363E" }}
     >
       {items.map((item) => {
         const Icon = item.icon;
@@ -22,7 +22,7 @@ export function MobileTabBar() {
           <Link
             key={item.to}
             to={item.to}
-            className={`flex flex-col items-center justify-center py-2.5 gap-1 transition ${active ? "text-[#3B82F6]" : "text-muted-foreground"}`}
+            className={`flex flex-col items-center justify-center py-2.5 gap-1 transition ${active ? "text-[#2F99DA]" : "text-muted-foreground"}`}
           >
             <Icon size={18} />
             <span className="text-[10px] font-medium">{item.label}</span>
