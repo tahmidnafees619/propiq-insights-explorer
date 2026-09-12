@@ -42,6 +42,12 @@ class Settings(BaseSettings):
 
     # --- HTTP ------------------------------------------------------------
     ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+    # Optional regex matched against the Origin header, in addition to the list
+    # above. Empty by default. Its intended use is local testing from another
+    # device — a phone on the same network reaches the app by LAN IP, not by
+    # localhost, and an IP handed out by DHCP cannot be hardcoded in a list.
+    # Leave unset in any deployment reachable from outside the machine.
+    ALLOWED_ORIGIN_REGEX: str = ""
     API_PREFIX: str = "/api"
 
     # --- Behaviour -------------------------------------------------------
