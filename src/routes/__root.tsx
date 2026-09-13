@@ -14,6 +14,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { BlueprintBackground } from "@/components/background/BlueprintBackground";
+import { IntroProvider } from "@/components/intro/IntroProvider";
+import { IntroSequence } from "@/components/intro/IntroSequence";
 
 function NotFoundComponent() {
   return (
@@ -107,18 +109,23 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Outside the route tree, so navigating never re-drafts the drawing. */}
       <BlueprintBackground />
-      <div className="relative z-10 min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex flex-1">
-          <Sidebar />
-          <main className="flex-1 min-w-0 pb-20 lg:pb-0">
-            <AnimatePresence mode="wait">
-              <Outlet />
-            </AnimatePresence>
-          </main>
+      <IntroProvider>
+        {/* The sheet is a spacer with a sticky stage; the app sits beneath it
+            in normal flow, so it is in the document and costs no LCP. */}
+        <IntroSequence />
+        <div className="relative z-10 min-h-screen flex flex-col">
+          <Navbar />
+          <div className="flex flex-1">
+            <Sidebar />
+            <main className="flex-1 min-w-0 pb-20 lg:pb-0">
+              <AnimatePresence mode="wait">
+                <Outlet />
+              </AnimatePresence>
+            </main>
+          </div>
+          <MobileTabBar />
         </div>
-        <MobileTabBar />
-      </div>
+      </IntroProvider>
     </QueryClientProvider>
   );
 }

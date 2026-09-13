@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Home, Github } from "lucide-react";
 
 import { useMotionEnabled } from "@/components/motion";
+import { useIntro } from "@/components/intro/IntroProvider";
 import { SPRING } from "@/lib/motion";
 
 const links = [
@@ -17,6 +18,10 @@ const REPO = "https://github.com/tahmidnafees619/propiq-insights-explorer-main";
 export function Navbar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const enabled = useMotionEnabled();
+  // The title sheet ends with the wordmark dismantling into individual
+  // letters; the real logo below only fades in once that has finished, so the
+  // two never read as the same object competing for the same space.
+  const { introActive } = useIntro();
 
   return (
     <header
@@ -25,11 +30,18 @@ export function Navbar() {
     >
       <div className="flex items-center justify-between h-14 px-6">
         <Link to="/" className="flex items-center gap-2 group">
-          <span className="text-lg font-bold tracking-tight">
-            <span className="text-foreground">Prop</span>
-            <span className="text-[#2F99DA]">IQ</span>
-          </span>
-          <Home size={14} className="text-[#2F99DA]" />
+          <motion.span
+            className="flex items-center gap-2"
+            initial={false}
+            animate={{ opacity: introActive ? 0 : 1 }}
+            transition={enabled ? { duration: 0.4, ease: "easeOut" } : { duration: 0 }}
+          >
+            <span className="text-lg font-bold tracking-tight">
+              <span className="text-foreground">Prop</span>
+              <span className="text-[var(--ink-500)]">IQ</span>
+            </span>
+            <Home size={14} className="text-[var(--ink-500)]" />
+          </motion.span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
