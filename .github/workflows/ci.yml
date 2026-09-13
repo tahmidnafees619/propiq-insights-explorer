@@ -47,8 +47,8 @@ jobs:
         continue-on-error: true
 
       - name: Run tests
-        # Model artifacts are not committed, so prediction tests self-skip.
-        # Everything else — contracts, filtering, demo-data integrity — runs.
+        # Model artifacts are committed (~1.9 MB), so the full suite runs
+        # here — including prediction, calibration and comparables.
         run: pytest tests/ -v --tb=short
 
   frontend:

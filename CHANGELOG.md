@@ -6,6 +6,76 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ---
 
+## [1.1.0] — 2026-09-14
+
+An interface release, plus the tooling and documentation fixes an end-to-end
+review of the project turned up.
+
+### Added
+
+- **A drafting-table title sequence on the dashboard.** A small isometric house
+  inks itself in, a parallel rule lays down the writing lines, and a T-square
+  blade travels left to right with the PropIQ wordmark following it — the
+  *instrument* working, rather than letters appearing by themselves. On scroll
+  the house is lowered out of frame, the sheet furniture retracts, and the
+  wordmark dismantles letter by letter toward the corner where the navbar sits.
+
+  Three constraints shaped it. It **costs no LCP**: the sheet is a spacer with a
+  sticky stage and the dashboard sits beneath it in normal document flow, so the
+  content is in the document whether or not the sequence runs. It **cannot flash
+  unstyled text**: the wordmark is monoline geometry, not a web font, which is
+  also what lets `pathLength` animate it convincingly. And it **stays out of the
+  way**: it plays only on the dashboard, only once per session, and never under
+  `prefers-reduced-motion`. Navigating away mid-sequence retires it, so
+  returning does not replay it. `?intro=1` forces it for recording a demo.
+
+  There is deliberately no shared-element morph between the drawn mark and the
+  navbar's typeset logo — the two do not share a shape to morph between, and
+  forcing one would read as a bug. The navbar simply fades in once the last
+  letter has gone.
+
+- **`ALLOWED_ORIGIN_REGEX`** — allows origins matching a regex in addition to
+  the explicit list, so the app can be opened from a phone on the same LAN for
+  testing. Empty by default, and documented as something to leave unset
+  anywhere the API is reachable from outside the machine.
+
+- **`.gitattributes`** — `* text=auto eol=lf`, which the repository had been
+  missing. On a Windows checkout, Git's CRLF conversion and Prettier's LF
+  expectation disagree, and that disagreement surfaces as dozens of `Delete ␍`
+  lint errors on files nobody meaningfully touched.
+
+- **A documentation set** under `docs/`: the project report (moved from the
+  root), plus a model report, an API reference with a live verification log, and
+  a prioritised roadmap.
+
+### Fixed
+
+- **`eslint .` traversed roughly 200,000 files before linting anything.** The
+  ignore list covered `dist` and `.output` but not the Python virtualenvs living
+  in the repository, so every file under `.venv-1/Lib/site-packages` was walked
+  first. The run took over ten minutes — long enough that the command reads as
+  hung and stops being run at all. With the ignores added it finishes in **13
+  seconds**. A check nobody runs provides no safety.
+
+- **Stale figures in the documentation.** The README's worked `POST /api/predict`
+  example showed a response from a superseded model, and the test count was
+  recorded as 89 against an actual 116. Both now match a live run.
+
+- **A stale comment in CI** claiming prediction tests self-skip because model
+  artifacts are not committed. They are committed, and the full suite runs.
+
+### Changed
+
+- The predictor form emits drafts on every edit rather than only on submit, so
+  the floor-plan schematic redraws live as the property is configured.
+- `Navbar` reads its accent from `var(--ink-500)` rather than a hex literal.
+  Twenty-five component files still carry literal hex; finishing that migration
+  is [roadmap item 2](docs/ROADMAP.md).
+- Removed two stray empty directories left at the repository root (`data/`,
+  `models/`), superseded by their counterparts under `propiq-backend/`.
+
+---
+
 ## [1.0.0] — 2026-09-11
 
 First production release. The application was audited end to end; this release fixes what that audit found and hardens everything around it.
@@ -37,7 +107,7 @@ First production release. The application was audited end to end; this release f
 - **A uniform error envelope** across every endpoint, carrying field-level validation detail.
 - **Expanded querying** on `/api/properties`: free-text search, sorting, bathroom/sqft/grade/zipcode filters, and complete pagination metadata.
 - **Richer statistics**: true median, min/max, sale volume by month, price-band distribution, a down-sampled scatter series, and a computed waterfront premium.
-- **89 tests** (from 5), asserting on values rather than key existence, including regression tests for every bug above.
+- **116 tests** (from 5), asserting on values rather than key existence, including regression tests for every bug above.
 - **Project infrastructure**: GitHub Actions CI, Dockerfiles for both services, `docker-compose.yml`, Ruff and mypy configuration, and contributor documentation.
 
 ### Changed
