@@ -7,7 +7,7 @@
  */
 
 /** Whether a payload came from real records or the bundled showcase dataset. */
-export type DataSource = 'database' | 'demo';
+export type DataSource = "database" | "demo";
 
 export interface Property {
   id: number;
@@ -74,6 +74,40 @@ export interface ValueDriver {
 }
 
 /** Raw `POST /api/predict` response. */
+/** One real sale offered as a comparable for the subject property. */
+export interface ComparableSale {
+  id: number;
+  price: number;
+  price_formatted: string;
+  bedrooms: number;
+  bathrooms: number;
+  sqft_living: number;
+  grade: number;
+  yr_built: number;
+  zipcode?: string | null;
+  lat: number;
+  long: number;
+  /** Matched exactly against the subject; comps never cross the waterfront line. */
+  waterfront: number;
+  /** Straight-line miles from the subject property. */
+  distance_miles: number;
+  /** Match strength against the subject, 0-100. */
+  similarity: number;
+  price_per_sqft: number;
+  /** When the sale closed, e.g. "Mar 2015". */
+  sold?: string | null;
+}
+
+export interface ComparablesSummary {
+  count: number;
+  low_price: number;
+  high_price: number;
+  median_price: number;
+  /** True when the estimate falls between the cheapest and priciest comp. */
+  estimate_within_range: boolean;
+  source: DataSource;
+}
+
 export interface PredictionResponse {
   predicted_price: number;
   price_formatted: string;
@@ -81,7 +115,7 @@ export interface PredictionResponse {
   price_low: number;
   price_high: number;
   confidence_percent: number;
-  confidence_level: 'high' | 'medium' | 'low';
+  confidence_level: "high" | "medium" | "low";
   percentile: number;
   breakdown: ValueDriver[];
   model_used: string;
@@ -89,6 +123,8 @@ export interface PredictionResponse {
   extrapolated: boolean;
   notes: string[];
   input_summary: Record<string, number>;
+  comparables: ComparableSale[];
+  comparables_summary: ComparablesSummary | null;
 }
 
 /** View-model shape the predictor components render. */
@@ -97,7 +133,7 @@ export interface PredictionResult {
   margin: number;
   /** Interval coverage as a fraction, e.g. 0.9 for a 90% interval. */
   confidence: number;
-  confidenceLevel: 'high' | 'medium' | 'low';
+  confidenceLevel: "high" | "medium" | "low";
   breakdown: ValueDriver[];
   percentile: number;
   similar_low: number;
@@ -105,6 +141,8 @@ export interface PredictionResult {
   modelUsed: string;
   extrapolated: boolean;
   notes: string[];
+  comparables: ComparableSale[];
+  comparablesSummary: ComparablesSummary | null;
 }
 
 export interface BedroomStat {
@@ -195,5 +233,23 @@ export interface KPIData {
   suffix?: string;
   sub: string;
   icon: string;
-  accent: 'blue' | 'green' | 'amber' | 'red';
+  accent: "blue" | "green" | "amber" | "red";
+}
+
+/** Aggregates for one ZIP code, used to shade the price choropleth. */
+export interface ZipcodeStat {
+  zipcode: string;
+  median_price: number;
+  avg_price: number;
+  price_per_sqft: number;
+  count: number;
+}
+
+export interface ZipcodeStatsResponse {
+  zipcodes: ZipcodeStat[];
+  /** Lowest ZIP median — the colour scale's floor. */
+  min_median: number;
+  /** Highest ZIP median — the colour scale's ceiling. */
+  max_median: number;
+  source: DataSource;
 }

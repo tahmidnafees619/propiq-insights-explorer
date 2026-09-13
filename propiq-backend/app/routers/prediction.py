@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 
 from app.config import settings
+from app.database import get_db
 from app.schemas.common import ErrorResponse
 from app.schemas.prediction import (
     FeatureImportanceItem,
@@ -12,6 +14,7 @@ from app.schemas.prediction import (
     PredictionInput,
     PredictionResponse,
 )
+from app.services import comps_service
 from app.services.ml_service import ml_service
 
 router = APIRouter(prefix=settings.API_PREFIX, tags=["Prediction"])
@@ -28,20 +31,35 @@ COMMON_ERRORS = {
     responses=COMMON_ERRORS,
     summary="Estimate a property's sale price",
 )
-def predict_price(payload: PredictionInput) -> PredictionResponse:
+def predict_price(
+    payload: PredictionInput,
+    db: Session = Depends(get_db),
+) -> PredictionResponse:
     """Price a property from its attributes.
 
     Returns a point estimate alongside a 90% prediction interval calibrated
     on held-out residuals, the price's percentile within the King County
     market, and a breakdown attributing the estimate to size, rooms, quality,
     location and waterfront/view.
+
+    Also returns the most similar real sales nearby, so the estimate can be
+    read against what comparable homes actually sold for.
     """
     data = payload.model_dump()
     result = ml_service.predict(data)
 
+    comparables, source = comps_service.find_comparables(db, data)
+    summary = (
+        comps_service.summarise(comparables, result["predicted_price"], source)
+        if comparables
+        else None
+    )
+
     return PredictionResponse(
         **result,
         price_formatted=f"${result['predicted_price']:,.0f}",
+        comparables=comparables,
+        comparables_summary=summary,
         input_summary={
             "sqft_living": payload.sqft_living,
             "bedrooms": payload.bedrooms,

@@ -12,7 +12,7 @@
  */
 
 export const API_BASE_URL: string =
-  (import.meta as { env?: Record<string, string> }).env?.VITE_API_URL ?? 'http://localhost:8000';
+  (import.meta as { env?: Record<string, string> }).env?.VITE_API_URL ?? "http://localhost:8000";
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 
@@ -35,7 +35,7 @@ export class ApiError extends Error {
     options: { status: number; code: string; details?: ApiErrorDetail[]; requestId?: string },
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.status = options.status;
     this.code = options.code;
     this.details = options.details ?? [];
@@ -55,10 +55,10 @@ export class ApiError extends Error {
   /** A message suitable for display next to a form. */
   get displayMessage(): string {
     if (this.isNetworkError) {
-      return 'Could not reach the PropIQ API. Showing demo data instead.';
+      return "Could not reach the PropIQ API. Showing demo data instead.";
     }
     if (this.isValidationError && this.details.length > 0) {
-      return this.details.map((detail) => detail.message).join(' ');
+      return this.details.map((detail) => detail.message).join(" ");
     }
     return this.message;
   }
@@ -69,7 +69,7 @@ interface ErrorEnvelope {
 }
 
 async function toApiError(response: Response): Promise<ApiError> {
-  let code = 'http_error';
+  let code = "http_error";
   let message = `Request failed with status ${response.status}`;
   let details: ApiErrorDetail[] = [];
   let requestId: string | undefined;
@@ -97,7 +97,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
       signal: controller.signal,
-      headers: { Accept: 'application/json', ...init?.headers },
+      headers: { Accept: "application/json", ...init?.headers },
     });
 
     if (!response.ok) {
@@ -108,10 +108,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   } catch (error) {
     if (error instanceof ApiError) throw error;
 
-    const aborted = error instanceof DOMException && error.name === 'AbortError';
+    const aborted = error instanceof DOMException && error.name === "AbortError";
     throw new ApiError(
-      aborted ? 'The API did not respond in time.' : 'Could not reach the PropIQ API.',
-      { status: 0, code: aborted ? 'timeout' : 'network_error' },
+      aborted ? "The API did not respond in time." : "Could not reach the PropIQ API.",
+      { status: 0, code: aborted ? "timeout" : "network_error" },
     );
   } finally {
     clearTimeout(timeout);
@@ -124,20 +124,22 @@ export function apiGet<T>(path: string): Promise<T> {
 
 export function apiPost<T>(path: string, body: unknown): Promise<T> {
   return request<T>(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
 /** Build a query string, omitting empty values. */
-export function toQuery(params: Record<string, string | number | boolean | undefined | null>): string {
+export function toQuery(
+  params: Record<string, string | number | boolean | undefined | null>,
+): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       search.set(key, String(value));
     }
   }
   const query = search.toString();
-  return query ? `?${query}` : '';
+  return query ? `?${query}` : "";
 }

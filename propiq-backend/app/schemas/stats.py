@@ -68,3 +68,26 @@ class StatsResponse(BaseModel):
         0.0, description="How much more waterfront homes sell for, in percent"
     )
     source: Literal["database", "demo"] = "database"
+
+
+class ZipcodeStat(BaseModel):
+    """Aggregates for a single ZIP code, used to shade the choropleth."""
+
+    zipcode: str
+    median_price: float
+    avg_price: float
+    price_per_sqft: float
+    count: int = Field(..., description="Sales recorded in this ZIP code")
+
+
+class ZipcodeStatsResponse(BaseModel):
+    """Per-ZIP aggregates plus the bounds the colour scale needs.
+
+    Returning the extremes here keeps the frontend from having to re-derive
+    them, and guarantees the legend matches the shading exactly.
+    """
+
+    zipcodes: list[ZipcodeStat]
+    min_median: float = Field(..., description="Lowest ZIP median, for the colour scale")
+    max_median: float = Field(..., description="Highest ZIP median, for the colour scale")
+    source: Literal["database", "demo"] = "database"

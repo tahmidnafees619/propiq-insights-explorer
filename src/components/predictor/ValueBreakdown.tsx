@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
-import { fmtCurrency } from '@/lib/formatters';
-import type { PredictionResult } from '@/types';
+import { fmtCurrency } from "@/lib/formatters";
+import type { PredictionResult } from "@/types";
 
 /**
  * Attributes the estimate to groups of inputs.
@@ -45,18 +45,18 @@ export function ValueBreakdown({ result }: { result: PredictionResult }) {
               <span
                 className="rounded-md px-1.5 py-0.5 text-[11px] font-medium"
                 style={{
-                  background: positive ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
-                  color: positive ? '#10B981' : '#EF4444',
+                  background: positive ? "rgba(61,174,145,0.15)" : "rgba(213,83,63,0.15)",
+                  color: positive ? "#3DAE91" : "#D5533F",
                 }}
               >
-                {positive ? '+' : '−'}
+                {positive ? "+" : "−"}
                 {fmtCurrency(Math.abs(driver.value))}
               </span>
             </div>
           );
         })}
 
-        <div className="mt-1 flex items-center justify-between rounded-xl bg-[#111D35] px-3 py-2.5 text-xs">
+        <div className="mt-1 flex items-center justify-between rounded-xl bg-[#192329] px-3 py-2.5 text-xs">
           <span className="font-semibold text-foreground">Final Estimate</span>
           <span className="font-semibold text-foreground">{fmtCurrency(result.estimate)}</span>
         </div>

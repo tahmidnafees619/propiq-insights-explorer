@@ -1,12 +1,15 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
-import { fmtCurrency } from '@/lib/formatters';
-import type { PredictionResult as PR } from '@/types';
+import { fmtCurrency } from "@/lib/formatters";
+import type { PredictionResult as PR } from "@/types";
 
-const CONFIDENCE_STYLES: Record<PR['confidenceLevel'], { label: string; color: string; background: string }> = {
-  high: { label: 'High confidence', color: '#10B981', background: 'rgba(16,185,129,0.15)' },
-  medium: { label: 'Moderate confidence', color: '#F59E0B', background: 'rgba(245,158,11,0.15)' },
-  low: { label: 'Low confidence', color: '#EF4444', background: 'rgba(239,68,68,0.15)' },
+const CONFIDENCE_STYLES: Record<
+  PR["confidenceLevel"],
+  { label: string; color: string; background: string }
+> = {
+  high: { label: "High confidence", color: "#3DAE91", background: "rgba(61,174,145,0.15)" },
+  medium: { label: "Moderate confidence", color: "#D0A74E", background: "rgba(208,167,78,0.15)" },
+  low: { label: "Low confidence", color: "#D5533F", background: "rgba(213,83,63,0.15)" },
 };
 
 /**
@@ -39,9 +42,11 @@ export function PredictionResult({ result }: { result: PR }) {
       <div className="mb-2 text-5xl font-bold tracking-tight text-foreground">
         {fmtCurrency(result.estimate)}
       </div>
-      <div className="mb-5 text-sm text-[#F59E0B]">± {fmtCurrency(result.margin)} margin of error</div>
+      <div className="mb-5 text-sm text-[#D0A74E]">
+        ± {fmtCurrency(result.margin)} margin of error
+      </div>
 
-      <div className="mb-4 rounded-xl border border-[#1E2D4A] bg-[#0A1120]/60 px-4 py-3">
+      <div className="mb-4 rounded-xl border border-[#28363E] bg-[#0C1318]/60 px-4 py-3">
         <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">
           {coverage}% prediction interval
         </div>
@@ -53,7 +58,7 @@ export function PredictionResult({ result }: { result: PR }) {
       </div>
 
       <p className="text-[11px] text-muted-foreground">
-        {coverage} out of 100 comparable homes are expected to sell within this range. Estimated by{' '}
+        {coverage} out of 100 comparable homes are expected to sell within this range. Estimated by{" "}
         <span className="text-foreground">{result.modelUsed}</span>.
       </p>
     </motion.div>

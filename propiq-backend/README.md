@@ -78,6 +78,7 @@ data/                  raw/ (your CSV) · propiq.db
 | `GET` | `/api/properties` | Filter, sort, paginate sale records |
 | `GET` | `/api/properties/{id}` | One property |
 | `GET` | `/api/stats` | Every dashboard aggregate in one round trip |
+| `GET` | `/api/stats/by-zipcode` | Median price, $/sqft and volume per ZIP code |
 
 ### Prediction input
 
@@ -169,6 +170,30 @@ Metrics are reported on **actual sale prices**, not the log-transformed target �
 
 Intervals come from the standard deviation of held-out residuals in log space, converted into multiplicative price bounds — not a fixed percentage. `metrics.json` carries the calibration data, so intervals track the deployed model's real error.
 
+### Comparable sales
+
+Every prediction carries the five most similar real sales, because an agent
+reasons in comps rather than feature importances — and because it is the
+cheapest sanity check available on the model's number.
+
+Selection runs a bounding-box prefilter in SQL, then scores exact haversine
+distance in Python. Candidates are ranked on a weighted similarity score:
+distance 40%, size 30%, grade 20%, room count 10%. Distance dominates because
+location is the model's strongest signal.
+
+The search widens only when it has to — 2 miles, then 5, then 15 — relaxing
+size and grade tolerance at each step until it finds enough matches.
+
+**Waterfront is a hard filter, never a scored dimension.** It commands a ~213%
+premium in this dataset, so a mixed set would make the range meaningless in
+whichever direction it was mixed. An earlier version scored it, and priced a
+Medina waterfront home against inland comps: the estimate landed $850k above a
+range built from the wrong houses.
+
+`comparables_summary.estimate_within_range` reports whether the estimate falls
+between the cheapest and priciest comp. It is deliberately allowed to come back
+false — that disagreement is information, not a bug to hide.
+
 ### Value breakdown
 
 Computed by ablation: price a typical King County home, then swap in the user's values one group at a time and record each delta. A boosted model is not additive, so the deltas will not sum exactly to the final price; the remainder is reported openly as "Combined effects" rather than being spread across the other rows.
@@ -240,6 +265,14 @@ docker run -p 8000:8000 propiq-api
 Or run the full stack from the repository root with `docker compose up --build`.
 
 The image is multi-stage — dependencies build in a throwaway layer so the runtime carries no compilers — and runs as a non-root user.
+
+---
+
+## Author
+
+**Md. Tahmidur Rahman Nafees** — full-stack development and machine learning implementation.
+Department of Electrical and Computer Engineering, North South University.
+[LinkedIn](https://www.linkedin.com/in/md-tahmidur-rahman-nafees-04a6a3227/) · [GitHub](https://github.com/tahmidnafees619/propiq-insights-explorer-main)
 
 ---
 

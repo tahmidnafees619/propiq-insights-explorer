@@ -6,13 +6,15 @@
 
 A production-grade ML application that prices homes from 21,000+ real sales — and shows its working: what drove the number, how confident it is, and how accurate the model actually is.
 
-[![CI](https://github.com/tahmidnafees619/propiq/actions/workflows/ci.yml/badge.svg)](https://github.com/tahmidnafees619/propiq/actions/workflows/ci.yml)
+[![CI](https://github.com/tahmidnafees619/propiq-insights-explorer-main/actions/workflows/ci.yml/badge.svg)](https://github.com/tahmidnafees619/propiq-insights-explorer-main/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-3B82F6.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 
 [Quick start](#quick-start) · [Architecture](#architecture) · [API](#api-reference) · [Model](#the-model) · [Testing](#testing)
+
+**[Read the full project report →](PROJECT_REPORT.md)**
 
 </div>
 
@@ -27,6 +29,7 @@ Most home-value estimators hand you a number and nothing else. PropIQ is built a
 | **A price** | A gradient-boosted estimate from 16 property attributes. |
 | **A calibrated range** | A 90% prediction interval derived from the model's held-out residuals — not a fixed percentage. A wider band genuinely means a less certain estimate. |
 | **A breakdown** | The estimate decomposed by ablation into size, rooms, quality, location and waterfront/view, so you can see *why* it landed where it did. |
+| **Real comparables** | The five most similar sales nearby, with the estimate shown against what those homes actually sold for. Comps never cross the waterfront line. |
 
 Alongside the predictor sits a market dashboard: price distributions, per-bedroom and per-grade breakdowns, seasonal trends, and a filterable table of sale records.
 
@@ -43,8 +46,8 @@ Alongside the predictor sits a market dashboard: price distributions, per-bedroo
 **Prerequisites:** Python 3.11+, Node 20+
 
 ```bash
-git clone https://github.com/tahmidnafees619/propiq.git
-cd propiq
+git clone https://github.com/tahmidnafees619/propiq-insights-explorer-main.git
+cd propiq-insights-explorer-main
 ```
 
 <details open>
@@ -139,6 +142,7 @@ propiq/
 │   │   ├── layout/                   # Navbar, sidebar, page wrapper
 │   │   └── shared/                   # Empty/error/loading states, data-source badge
 │   ├── hooks/                        # One hook per endpoint, each with demo fallback
+│   ├── data/                         # Simplified Census ZCTA boundaries (~120 KB)
 │   ├── lib/
 │   │   ├── api.ts                    # Typed client, error normalisation, timeouts
 │   │   └── demo-data.ts              # Bundled showcase dataset
@@ -214,6 +218,7 @@ Base URL `http://localhost:8000`. Full interactive docs at `/docs`.
 | `GET` | `/api/properties` | Filter, sort, paginate sale records |
 | `GET` | `/api/properties/{id}` | One property |
 | `GET` | `/api/stats` | Every dashboard aggregate in one round trip |
+| `GET` | `/api/stats/by-zipcode` | Median price, $/sqft and volume per ZIP code |
 
 <details>
 <summary><b>Example: predicting a price</b></summary>
@@ -344,6 +349,26 @@ The suite covers the API contract, filtering and pagination, error envelopes, de
 
 ---
 
+## Design system
+
+The palette is built from drafting materials rather than assembled from a UI kit, and every ramp is derived in HSL rather than hand-picked, so hue stays constant while saturation falls off as lightness rises.
+
+| Role | Colour | Why |
+|---|---|---|
+| Neutrals | Hue 202, cyan-navy | Tailwind slate sits near 215 with a purple lean — the most recognisable default-palette tell in a dark UI |
+| Ink | **Cyanotype** `#2F99DA` | The pigment of an actual blueprint. Hue 203 against blue-500's 217, saturation 70 against its 91 |
+| Accent | **Aged brass** `#D0A74E` | Surveying instruments, not a warning triangle. Reserved for the primary action and nothing else |
+| Positive | **Verdigris** `#3DAE91` | Weathered copper |
+| Negative | **Iron oxide** `#D5533F` | |
+| Data | 9-step sequential ramp | Kept clear of the accent, so a chart series is never mistaken for something interactive |
+
+Two rules the components follow:
+
+- **One accent, rationed.** Brass appears on exactly one control in the app. That is what makes it read as emphasis rather than decoration.
+- **Quantities never borrow the UI palette.** Charts use the sequential ramp; interactive elements use ink.
+
+Every text pairing is checked against WCAG before it ships — all pass AA, most exceed AAA. Contrast for the shipped palette runs from 6.0:1 (negative text on a card) to 17.2:1 (primary text on the page ground).
+
 ## Tech stack
 
 **Frontend** — React 19 · TypeScript · TanStack Start/Router/Query · Tailwind CSS 4 · Recharts · Framer Motion · Vite 7
@@ -353,6 +378,15 @@ The suite covers the API contract, filtering and pagination, error envelopes, de
 **Tooling** — pytest · Ruff · ESLint · Prettier · Docker · GitHub Actions
 
 ---
+
+## Author
+
+**Md. Tahmidur Rahman Nafees**
+Full-stack development and machine learning implementation — data pipeline, model training and calibration, FastAPI backend, and React frontend.
+
+Department of Electrical and Computer Engineering, North South University
+
+[LinkedIn](https://www.linkedin.com/in/md-tahmidur-rahman-nafees-04a6a3227/) · [GitHub](https://github.com/tahmidnafees619/propiq-insights-explorer-main)
 
 ## Contributing
 
@@ -365,3 +399,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Issues and pull requests are welcome.
 ## Acknowledgements
 
 Built on the [King County House Sales dataset](https://www.kaggle.com/datasets/harlfoxem/housesalesprediction) — 21,613 home sales from May 2014 to May 2015, published by King County, WA.
+
+ZIP-code boundaries are US Census Bureau [TIGER/Line ZCTAs](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html), public domain, simplified to ~120 KB for the web.

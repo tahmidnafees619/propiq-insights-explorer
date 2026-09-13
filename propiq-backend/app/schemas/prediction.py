@@ -92,6 +92,46 @@ class ValueDriver(BaseModel):
     percent: float = Field(..., description="Share of the final estimate, in percent")
 
 
+class ComparableSale(BaseModel):
+    """One real sale offered as a comparable for the subject property."""
+
+    id: int
+    price: float
+    price_formatted: str
+    bedrooms: int
+    bathrooms: float
+    sqft_living: float
+    grade: int
+    yr_built: int
+    zipcode: str | None = None
+    lat: float
+    long: float
+    waterfront: int = Field(0, description="Matched exactly against the subject: comps never cross this line")
+    distance_miles: float = Field(..., description="Straight-line miles from the subject property")
+    similarity: float = Field(..., description="Match strength against the subject, 0-100")
+    price_per_sqft: float
+    sold: str | None = Field(
+        None,
+        description="When this sale closed, e.g. 'Mar 2015'. Shown so the reader can judge how "
+        "current the comparison is.",
+    )
+
+
+class ComparablesSummary(BaseModel):
+    """Headline the UI puts beside the estimate."""
+
+    count: int
+    low_price: float
+    high_price: float
+    median_price: float
+    estimate_within_range: bool = Field(
+        ...,
+        description="True when the estimate falls between the cheapest and priciest comparable "
+        "— a plain sanity check on the model.",
+    )
+    source: Literal["database", "demo"] = "database"
+
+
 class PredictionResponse(BaseModel):
     predicted_price: float
     price_formatted: str
@@ -110,6 +150,15 @@ class PredictionResponse(BaseModel):
     )
     notes: list[str] = Field(default_factory=list)
     input_summary: dict
+
+    comparables: list[ComparableSale] = Field(
+        default_factory=list,
+        description="Real nearby sales most similar to the subject property.",
+    )
+    comparables_summary: ComparablesSummary | None = Field(
+        None,
+        description="Range and median of the comparables. Absent when none were found.",
+    )
 
 
 class FeatureImportanceItem(BaseModel):

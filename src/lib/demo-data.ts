@@ -19,7 +19,9 @@ import type {
   ModelMetrics,
   Property,
   StatsResponse,
-} from '@/types';
+  ZipcodeStat,
+  ZipcodeStatsResponse,
+} from "@/types";
 
 /** Headline market figures for the King County dataset. */
 export const DEMO_TOTAL_PROPERTIES = 21_436;
@@ -32,7 +34,7 @@ export const DEMO_MEDIAN_PRICE = 450_000;
  * numbers to `models/metrics.json`.
  */
 export const DEMO_MODEL_METRICS: ModelMetrics = {
-  model_name: 'GradientBoostingRegressor',
+  model_name: "GradientBoostingRegressor",
   trained_at: null,
   n_samples: 21_599,
   n_features: 16,
@@ -45,32 +47,99 @@ export const DEMO_MODEL_METRICS: ModelMetrics = {
   within_10_pct: 57.1,
   within_20_pct: 83.2,
   leaderboard: [
-    { model: 'GradientBoostingRegressor', r2: 0.9036, r2_log: 0.907, mae: 64_704, rmse: 114_277, mape: 11.74, median_ape: 8.35 },
-    { model: 'RandomForestRegressor', r2: 0.8851, r2_log: 0.8957, mae: 69_200, rmse: 124_600, mape: 12.6, median_ape: 9.0 },
-    { model: 'Ridge', r2: 0.4685, r2_log: 0.7677, mae: 115_701, rmse: 268_100, mape: 24.9, median_ape: 18.4 },
-    { model: 'LinearRegression', r2: 0.4686, r2_log: 0.7677, mae: 115_701, rmse: 268_100, mape: 24.9, median_ape: 18.4 },
+    {
+      model: "GradientBoostingRegressor",
+      r2: 0.9036,
+      r2_log: 0.907,
+      mae: 64_704,
+      rmse: 114_277,
+      mape: 11.74,
+      median_ape: 8.35,
+    },
+    {
+      model: "RandomForestRegressor",
+      r2: 0.8851,
+      r2_log: 0.8957,
+      mae: 69_200,
+      rmse: 124_600,
+      mape: 12.6,
+      median_ape: 9.0,
+    },
+    {
+      model: "Ridge",
+      r2: 0.4685,
+      r2_log: 0.7677,
+      mae: 115_701,
+      rmse: 268_100,
+      mape: 24.9,
+      median_ape: 18.4,
+    },
+    {
+      model: "LinearRegression",
+      r2: 0.4686,
+      r2_log: 0.7677,
+      mae: 115_701,
+      rmse: 268_100,
+      mape: 24.9,
+      median_ape: 18.4,
+    },
   ],
 };
 
 const ZIPCODES = [
-  '98004', '98005', '98006', '98027', '98033', '98034', '98040',
-  '98052', '98053', '98103', '98115', '98117', '98118', '98122',
-  '98125', '98133', '98144', '98155', '98178', '98198',
+  "98004",
+  "98005",
+  "98006",
+  "98027",
+  "98033",
+  "98034",
+  "98040",
+  "98052",
+  "98053",
+  "98103",
+  "98115",
+  "98117",
+  "98118",
+  "98122",
+  "98125",
+  "98133",
+  "98144",
+  "98155",
+  "98178",
+  "98198",
 ];
 
 const GRADE_AVERAGES: Record<number, number> = {
-  5: 235_000, 6: 310_000, 7: 412_000, 8: 548_000,
-  9: 712_000, 10: 920_000, 11: 1_180_000, 12: 1_620_000,
+  5: 235_000,
+  6: 310_000,
+  7: 412_000,
+  8: 548_000,
+  9: 712_000,
+  10: 920_000,
+  11: 1_180_000,
+  12: 1_620_000,
 };
 
 const GRADE_WEIGHTS: Array<[grade: number, weight: number]> = [
-  [5, 320], [6, 1_240], [7, 5_820], [8, 6_420],
-  [9, 4_180], [10, 2_180], [11, 980], [12, 296],
+  [5, 320],
+  [6, 1_240],
+  [7, 5_820],
+  [8, 6_420],
+  [9, 4_180],
+  [10, 2_180],
+  [11, 980],
+  [12, 296],
 ];
 
 const TYPICAL_SQFT_BY_GRADE: Record<number, number> = {
-  5: 1_060, 6: 1_240, 7: 1_660, 8: 2_070,
-  9: 2_570, 10: 3_040, 11: 3_600, 12: 4_260,
+  5: 1_060,
+  6: 1_240,
+  7: 1_660,
+  8: 2_070,
+  9: 2_570,
+  10: 3_040,
+  11: 3_600,
+  12: 4_260,
 };
 
 /** Matches the backend's `_PRICE_CALIBRATION`. */
@@ -131,7 +200,11 @@ function generateProperties(count = 600): Property[] {
     const sqft_above = sqft_living - sqft_basement;
 
     const waterfront: 0 | 1 = rand() < 0.0075 ? 1 : 0;
-    const view = waterfront ? 3 + Math.floor(rand() * 2) : (rand() < 0.9 ? 0 : 1 + Math.floor(rand() * 4));
+    const view = waterfront
+      ? 3 + Math.floor(rand() * 2)
+      : rand() < 0.9
+        ? 0
+        : 1 + Math.floor(rand() * 4);
     const condition = clamp(Math.round(gaussian(rand, 3.4, 0.65)), 1, 5);
     const yr_built = Math.round(1_900 + (2_015 - 1_900) * Math.sqrt(rand()) * 0.92);
     const lat = 47.16 + rand() * 0.62;
@@ -213,29 +286,29 @@ export const DEMO_STATS: StatsResponse = {
     { grade: 12, avg_price: 1_620_000, count: 296 },
   ],
   monthly: [
-    { month: 'Jan', month_number: 1, avg_price: 488_000, volume: 1_240 },
-    { month: 'Feb', month_number: 2, avg_price: 502_000, volume: 1_380 },
-    { month: 'Mar', month_number: 3, avg_price: 534_000, volume: 1_820 },
-    { month: 'Apr', month_number: 4, avg_price: 558_000, volume: 2_150 },
-    { month: 'May', month_number: 5, avg_price: 578_000, volume: 2_440 },
-    { month: 'Jun', month_number: 6, avg_price: 595_000, volume: 2_510 },
-    { month: 'Jul', month_number: 7, avg_price: 588_000, volume: 2_280 },
-    { month: 'Aug', month_number: 8, avg_price: 572_000, volume: 2_010 },
-    { month: 'Sep', month_number: 9, avg_price: 548_000, volume: 1_840 },
-    { month: 'Oct', month_number: 10, avg_price: 530_000, volume: 1_620 },
-    { month: 'Nov', month_number: 11, avg_price: 512_000, volume: 1_380 },
-    { month: 'Dec', month_number: 12, avg_price: 498_000, volume: 1_140 },
+    { month: "Jan", month_number: 1, avg_price: 488_000, volume: 1_240 },
+    { month: "Feb", month_number: 2, avg_price: 502_000, volume: 1_380 },
+    { month: "Mar", month_number: 3, avg_price: 534_000, volume: 1_820 },
+    { month: "Apr", month_number: 4, avg_price: 558_000, volume: 2_150 },
+    { month: "May", month_number: 5, avg_price: 578_000, volume: 2_440 },
+    { month: "Jun", month_number: 6, avg_price: 595_000, volume: 2_510 },
+    { month: "Jul", month_number: 7, avg_price: 588_000, volume: 2_280 },
+    { month: "Aug", month_number: 8, avg_price: 572_000, volume: 2_010 },
+    { month: "Sep", month_number: 9, avg_price: 548_000, volume: 1_840 },
+    { month: "Oct", month_number: 10, avg_price: 530_000, volume: 1_620 },
+    { month: "Nov", month_number: 11, avg_price: 512_000, volume: 1_380 },
+    { month: "Dec", month_number: 12, avg_price: 498_000, volume: 1_140 },
   ],
   price_distribution: [
-    { bucket: '<300k', count: 1_820, floor: 0 },
-    { bucket: '300k', count: 3_940, floor: 300_000 },
-    { bucket: '400k', count: 5_210, floor: 400_000 },
-    { bucket: '500k', count: 4_380, floor: 500_000 },
-    { bucket: '600k', count: 2_850, floor: 600_000 },
-    { bucket: '750k', count: 1_640, floor: 750_000 },
-    { bucket: '900k', count: 920, floor: 900_000 },
-    { bucket: '1.2M', count: 420, floor: 1_200_000 },
-    { bucket: '1.5M+', count: 256, floor: 1_500_000 },
+    { bucket: "<300k", count: 1_820, floor: 0 },
+    { bucket: "300k", count: 3_940, floor: 300_000 },
+    { bucket: "400k", count: 5_210, floor: 400_000 },
+    { bucket: "500k", count: 4_380, floor: 500_000 },
+    { bucket: "600k", count: 2_850, floor: 600_000 },
+    { bucket: "750k", count: 1_640, floor: 750_000 },
+    { bucket: "900k", count: 920, floor: 900_000 },
+    { bucket: "1.2M", count: 420, floor: 1_200_000 },
+    { bucket: "1.5M+", count: 256, floor: 1_500_000 },
   ],
   scatter_sample: DEMO_PROPERTIES.slice(0, 400).map((row) => ({
     sqft_living: row.sqft_living,
@@ -243,25 +316,137 @@ export const DEMO_STATS: StatsResponse = {
     grade: row.grade,
   })),
   waterfront_premium_percent: 213,
-  source: 'demo',
+  source: "demo",
 };
 
 /** Importances from the shipped model, matching `/api/feature-importance`. */
 export const DEMO_FEATURE_IMPORTANCE: FeatureImportance[] = [
-  { feature: 'lat', label: 'Latitude', importance: 0.3095, importance_percent: 30.95 },
-  { feature: 'grade', label: 'Construction Grade', importance: 0.3013, importance_percent: 30.13 },
-  { feature: 'sqft_living', label: 'Living Area', importance: 0.2264, importance_percent: 22.64 },
-  { feature: 'long', label: 'Longitude', importance: 0.0471, importance_percent: 4.71 },
-  { feature: 'sqft_living15', label: 'Neighbourhood Living Area', importance: 0.0281, importance_percent: 2.81 },
-  { feature: 'yr_built', label: 'Year Built', importance: 0.0191, importance_percent: 1.91 },
-  { feature: 'view', label: 'View Quality', importance: 0.015, importance_percent: 1.5 },
-  { feature: 'sqft_lot', label: 'Lot Size', importance: 0.0114, importance_percent: 1.14 },
-  { feature: 'sqft_above', label: 'Above-Ground Area', importance: 0.0114, importance_percent: 1.14 },
-  { feature: 'sqft_lot15', label: 'Neighbourhood Lot Size', importance: 0.0096, importance_percent: 0.96 },
-  { feature: 'waterfront', label: 'Waterfront', importance: 0.0068, importance_percent: 0.68 },
-  { feature: 'condition', label: 'Condition', importance: 0.0065, importance_percent: 0.65 },
-  { feature: 'bathrooms', label: 'Bathrooms', importance: 0.0042, importance_percent: 0.42 },
-  { feature: 'sqft_basement', label: 'Basement Area', importance: 0.0017, importance_percent: 0.17 },
-  { feature: 'bedrooms', label: 'Bedrooms', importance: 0.0011, importance_percent: 0.11 },
-  { feature: 'floors', label: 'Floors', importance: 0.0006, importance_percent: 0.06 },
+  { feature: "lat", label: "Latitude", importance: 0.3095, importance_percent: 30.95 },
+  { feature: "grade", label: "Construction Grade", importance: 0.3013, importance_percent: 30.13 },
+  { feature: "sqft_living", label: "Living Area", importance: 0.2264, importance_percent: 22.64 },
+  { feature: "long", label: "Longitude", importance: 0.0471, importance_percent: 4.71 },
+  {
+    feature: "sqft_living15",
+    label: "Neighbourhood Living Area",
+    importance: 0.0281,
+    importance_percent: 2.81,
+  },
+  { feature: "yr_built", label: "Year Built", importance: 0.0191, importance_percent: 1.91 },
+  { feature: "view", label: "View Quality", importance: 0.015, importance_percent: 1.5 },
+  { feature: "sqft_lot", label: "Lot Size", importance: 0.0114, importance_percent: 1.14 },
+  {
+    feature: "sqft_above",
+    label: "Above-Ground Area",
+    importance: 0.0114,
+    importance_percent: 1.14,
+  },
+  {
+    feature: "sqft_lot15",
+    label: "Neighbourhood Lot Size",
+    importance: 0.0096,
+    importance_percent: 0.96,
+  },
+  { feature: "waterfront", label: "Waterfront", importance: 0.0068, importance_percent: 0.68 },
+  { feature: "condition", label: "Condition", importance: 0.0065, importance_percent: 0.65 },
+  { feature: "bathrooms", label: "Bathrooms", importance: 0.0042, importance_percent: 0.42 },
+  {
+    feature: "sqft_basement",
+    label: "Basement Area",
+    importance: 0.0017,
+    importance_percent: 0.17,
+  },
+  { feature: "bedrooms", label: "Bedrooms", importance: 0.0011, importance_percent: 0.11 },
+  { feature: "floors", label: "Floors", importance: 0.0006, importance_percent: 0.06 },
 ];
+
+/**
+ * Per-ZIP aggregates for the choropleth.
+ *
+ * Derived from the same King County dataset the published figures come from,
+ * so the map shades identically whether the API is live or offline.
+ */
+const DEMO_ZIPCODE_ROWS: ZipcodeStat[] = [
+  { zipcode: "98001", median_price: 260000, avg_price: 281195, price_per_sqft: 151.3, count: 358 },
+  { zipcode: "98002", median_price: 235000, avg_price: 234284, price_per_sqft: 151.2, count: 197 },
+  { zipcode: "98003", median_price: 267475, avg_price: 294111, price_per_sqft: 157.1, count: 278 },
+  {
+    zipcode: "98004",
+    median_price: 1150000,
+    avg_price: 1355927,
+    price_per_sqft: 475.4,
+    count: 315,
+  },
+  { zipcode: "98005", median_price: 765475, avg_price: 810165, price_per_sqft: 314.9, count: 167 },
+  { zipcode: "98006", median_price: 760184, avg_price: 859685, price_per_sqft: 299.1, count: 494 },
+  { zipcode: "98007", median_price: 555000, avg_price: 617105, price_per_sqft: 290.1, count: 140 },
+  { zipcode: "98008", median_price: 545000, avg_price: 645507, price_per_sqft: 301.7, count: 281 },
+  { zipcode: "98010", median_price: 360000, avg_price: 423666, price_per_sqft: 210.1, count: 99 },
+  { zipcode: "98011", median_price: 470000, avg_price: 490352, price_per_sqft: 226.0, count: 193 },
+  { zipcode: "98014", median_price: 415000, avg_price: 455617, price_per_sqft: 223.1, count: 123 },
+  { zipcode: "98019", median_price: 401250, avg_price: 424789, price_per_sqft: 203.0, count: 189 },
+  { zipcode: "98022", median_price: 279500, avg_price: 315709, price_per_sqft: 181.8, count: 232 },
+  { zipcode: "98023", median_price: 268450, avg_price: 286733, price_per_sqft: 148.9, count: 495 },
+  { zipcode: "98024", median_price: 462500, avg_price: 586008, price_per_sqft: 252.3, count: 79 },
+  { zipcode: "98027", median_price: 570500, avg_price: 616991, price_per_sqft: 251.6, count: 409 },
+  { zipcode: "98028", median_price: 445000, avg_price: 462480, price_per_sqft: 225.1, count: 281 },
+  { zipcode: "98029", median_price: 575000, avg_price: 612654, price_per_sqft: 272.1, count: 319 },
+  { zipcode: "98030", median_price: 282255, avg_price: 296188, price_per_sqft: 155.2, count: 254 },
+  { zipcode: "98031", median_price: 288000, avg_price: 300340, price_per_sqft: 161.1, count: 271 },
+  { zipcode: "98032", median_price: 249000, avg_price: 251296, price_per_sqft: 154.2, count: 124 },
+  { zipcode: "98033", median_price: 678350, avg_price: 803720, price_per_sqft: 343.2, count: 429 },
+  { zipcode: "98034", median_price: 445950, avg_price: 521653, price_per_sqft: 265.9, count: 541 },
+  { zipcode: "98038", median_price: 342000, avg_price: 367083, price_per_sqft: 173.7, count: 585 },
+  { zipcode: "98039", median_price: 1892500, avg_price: 2160607, price_per_sqft: 568.1, count: 50 },
+  { zipcode: "98040", median_price: 993750, avg_price: 1194230, price_per_sqft: 387.3, count: 280 },
+  { zipcode: "98042", median_price: 291500, avg_price: 311580, price_per_sqft: 164.4, count: 543 },
+  { zipcode: "98045", median_price: 399500, avg_price: 439471, price_per_sqft: 220.5, count: 219 },
+  { zipcode: "98052", median_price: 615000, avg_price: 645232, price_per_sqft: 280.4, count: 570 },
+  { zipcode: "98053", median_price: 634900, avg_price: 676635, price_per_sqft: 269.5, count: 401 },
+  { zipcode: "98055", median_price: 294950, avg_price: 304262, price_per_sqft: 180.4, count: 266 },
+  { zipcode: "98056", median_price: 380000, avg_price: 420890, price_per_sqft: 215.5, count: 403 },
+  { zipcode: "98058", median_price: 335000, avg_price: 353609, price_per_sqft: 178.2, count: 452 },
+  { zipcode: "98059", median_price: 435000, avg_price: 493552, price_per_sqft: 207.2, count: 464 },
+  { zipcode: "98065", median_price: 502500, avg_price: 529588, price_per_sqft: 211.0, count: 306 },
+  { zipcode: "98070", median_price: 465000, avg_price: 489381, price_per_sqft: 277.9, count: 116 },
+  { zipcode: "98072", median_price: 515000, avg_price: 569958, price_per_sqft: 247.5, count: 271 },
+  { zipcode: "98074", median_price: 642000, avg_price: 685606, price_per_sqft: 265.7, count: 438 },
+  { zipcode: "98075", median_price: 739999, avg_price: 790577, price_per_sqft: 268.6, count: 356 },
+  { zipcode: "98077", median_price: 652475, avg_price: 682775, price_per_sqft: 244.3, count: 196 },
+  { zipcode: "98092", median_price: 309780, avg_price: 334921, price_per_sqft: 155.8, count: 348 },
+  { zipcode: "98102", median_price: 710000, avg_price: 899395, price_per_sqft: 423.8, count: 103 },
+  { zipcode: "98103", median_price: 550000, avg_price: 584828, price_per_sqft: 369.8, count: 596 },
+  { zipcode: "98105", median_price: 675000, avg_price: 862825, price_per_sqft: 405.1, count: 227 },
+  { zipcode: "98106", median_price: 315000, avg_price: 319581, price_per_sqft: 231.3, count: 332 },
+  { zipcode: "98107", median_price: 529950, avg_price: 579053, price_per_sqft: 382.9, count: 264 },
+  { zipcode: "98108", median_price: 342500, avg_price: 355678, price_per_sqft: 224.4, count: 185 },
+  { zipcode: "98109", median_price: 736000, avg_price: 879624, price_per_sqft: 433.4, count: 108 },
+  { zipcode: "98112", median_price: 915000, avg_price: 1095499, price_per_sqft: 438.6, count: 267 },
+  { zipcode: "98115", median_price: 567000, avg_price: 619901, price_per_sqft: 354.1, count: 579 },
+  { zipcode: "98116", median_price: 562750, avg_price: 618634, price_per_sqft: 348.6, count: 327 },
+  { zipcode: "98117", median_price: 544000, avg_price: 576795, price_per_sqft: 363.5, count: 549 },
+  { zipcode: "98118", median_price: 367500, avg_price: 418012, price_per_sqft: 262.6, count: 503 },
+  { zipcode: "98119", median_price: 744975, avg_price: 849448, price_per_sqft: 432.3, count: 183 },
+  { zipcode: "98122", median_price: 572000, avg_price: 634360, price_per_sqft: 367.5, count: 288 },
+  { zipcode: "98125", median_price: 425000, avg_price: 469899, price_per_sqft: 282.7, count: 406 },
+  { zipcode: "98126", median_price: 395750, avg_price: 424706, price_per_sqft: 292.8, count: 351 },
+  { zipcode: "98133", median_price: 375000, avg_price: 387012, price_per_sqft: 254.0, count: 489 },
+  { zipcode: "98136", median_price: 489950, avg_price: 551689, price_per_sqft: 337.2, count: 261 },
+  { zipcode: "98144", median_price: 450000, avg_price: 594548, price_per_sqft: 312.2, count: 340 },
+  { zipcode: "98146", median_price: 305000, avg_price: 359483, price_per_sqft: 225.5, count: 286 },
+  { zipcode: "98148", median_price: 278000, avg_price: 284909, price_per_sqft: 185.8, count: 57 },
+  { zipcode: "98155", median_price: 375000, avg_price: 423726, price_per_sqft: 246.5, count: 443 },
+  { zipcode: "98166", median_price: 390000, avg_price: 464232, price_per_sqft: 226.2, count: 252 },
+  { zipcode: "98168", median_price: 235000, avg_price: 240328, price_per_sqft: 175.4, count: 267 },
+  { zipcode: "98177", median_price: 554000, avg_price: 676185, price_per_sqft: 292.9, count: 253 },
+  { zipcode: "98178", median_price: 278277, avg_price: 310613, price_per_sqft: 189.2, count: 260 },
+  { zipcode: "98188", median_price: 264000, avg_price: 289078, price_per_sqft: 169.0, count: 135 },
+  { zipcode: "98198", median_price: 265000, avg_price: 302879, price_per_sqft: 178.4, count: 278 },
+  { zipcode: "98199", median_price: 689800, avg_price: 791821, price_per_sqft: 376.6, count: 315 },
+];
+
+export const DEMO_ZIPCODE_STATS: ZipcodeStatsResponse = {
+  zipcodes: DEMO_ZIPCODE_ROWS,
+  min_median: 235000,
+  max_median: 1892500,
+  source: "demo",
+};

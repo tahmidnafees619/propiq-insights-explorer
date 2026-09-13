@@ -1,5 +1,10 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "propiq-insights-explorer",
+  "version": "1.0.0",
+  "description": "ML-powered real estate market intelligence for King County, WA.",
+  "author": "Md. Tahmidur Rahman Nafees",
+  "repository": { "type": "git", "url": "https://github.com/tahmidnafees619/propiq-insights-explorer-main.git" },
+  "license": "MIT",
   "private": true,
   "sideEffects": false,
   "type": "module",

@@ -5,18 +5,18 @@
  * is actually serving traffic rather than a figure typed into the markup.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { apiGet } from '@/lib/api';
-import { DEMO_MODEL_METRICS } from '@/lib/demo-data';
-import type { ModelMetrics } from '@/types';
+import { apiGet } from "@/lib/api";
+import { DEMO_MODEL_METRICS } from "@/lib/demo-data";
+import type { ModelMetrics } from "@/types";
 
 export function useModelMetrics() {
   const query = useQuery({
-    queryKey: ['model-metrics'],
+    queryKey: ["model-metrics"],
     queryFn: async (): Promise<ModelMetrics> => {
       try {
-        return await apiGet<ModelMetrics>('/api/model/metrics');
+        return await apiGet<ModelMetrics>("/api/model/metrics");
       } catch {
         return DEMO_MODEL_METRICS;
       }

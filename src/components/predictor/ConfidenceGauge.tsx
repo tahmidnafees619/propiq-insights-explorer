@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
-import { fmtCurrency } from '@/lib/formatters';
-import type { PredictionResult } from '@/types';
+import { fmtCurrency } from "@/lib/formatters";
+import type { PredictionResult } from "@/types";
 
 /** Length of the semicircular gauge track, in SVG user units. */
 const ARC_LENGTH = 251;
@@ -37,14 +37,14 @@ export function ConfidenceGauge({ result }: { result: PredictionResult }) {
         <svg width="200" height="120" viewBox="0 0 200 120" role="img" aria-label={summary}>
           <defs>
             <linearGradient id="gauge" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#3B82F6" />
-              <stop offset="50%" stopColor="#10B981" />
-              <stop offset="100%" stopColor="#F59E0B" />
+              <stop offset="0%" stopColor="#2F99DA" />
+              <stop offset="50%" stopColor="#3DAE91" />
+              <stop offset="100%" stopColor="#D0A74E" />
             </linearGradient>
           </defs>
           <path
             d="M 20 100 A 80 80 0 0 1 180 100"
-            stroke="#1E2D4A"
+            stroke="#28363E"
             strokeWidth="10"
             fill="none"
             strokeLinecap="round"
@@ -58,19 +58,29 @@ export function ConfidenceGauge({ result }: { result: PredictionResult }) {
             strokeDasharray={`${(percentile / 100) * ARC_LENGTH} ${ARC_LENGTH}`}
           />
           <g transform={`translate(100,100) rotate(${angle})`}>
-            <line x1="0" y1="0" x2="0" y2="-65" stroke="#F1F5F9" strokeWidth="3" strokeLinecap="round" />
-            <circle r="6" fill="#3B82F6" />
+            <line
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="-65"
+              stroke="#EDF1F2"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <circle r="6" fill="#2F99DA" />
           </g>
-          <text x="100" y="88" textAnchor="middle" fill="#F1F5F9" fontSize="18" fontWeight="600">
+          <text x="100" y="88" textAnchor="middle" fill="#EDF1F2" fontSize="18" fontWeight="600">
             {percentile.toFixed(0)}
-            <tspan fontSize="11" fill="#94A3B8">th</tspan>
+            <tspan fontSize="11" fill="#91A2AC">
+              th
+            </tspan>
           </text>
         </svg>
       </div>
 
       <div className="text-center text-xs text-muted-foreground">
-        Comparable homes are expected to sell between{' '}
-        <span className="font-medium text-foreground">{fmtCurrency(result.similar_low)}</span> and{' '}
+        Comparable homes are expected to sell between{" "}
+        <span className="font-medium text-foreground">{fmtCurrency(result.similar_low)}</span> and{" "}
         <span className="font-medium text-foreground">{fmtCurrency(result.similar_high)}</span>
       </div>
     </motion.div>

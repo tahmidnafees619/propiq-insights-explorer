@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.database import get_db
-from app.schemas.stats import StatsResponse
+from app.schemas.stats import StatsResponse, ZipcodeStatsResponse
 from app.services import stats_service
 
 router = APIRouter(prefix=settings.API_PREFIX, tags=["Stats"])
@@ -22,3 +22,17 @@ def get_stats(db: Session = Depends(get_db)) -> StatsResponse:
     series. Model accuracy always reflects the deployed model.
     """
     return StatsResponse(**stats_service.get_stats(db))
+
+
+@router.get(
+    "/stats/by-zipcode",
+    response_model=ZipcodeStatsResponse,
+    summary="Median price and sale volume per ZIP code",
+)
+def get_zipcode_stats(db: Session = Depends(get_db)) -> ZipcodeStatsResponse:
+    """Per-ZIP aggregates that shade the price choropleth.
+
+    Location is the model's strongest single signal, so this is the
+    geographic view of what actually drives price across King County.
+    """
+    return ZipcodeStatsResponse(**stats_service.get_zipcode_stats(db))

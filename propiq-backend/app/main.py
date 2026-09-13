@@ -79,7 +79,10 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         docs_url="/docs",
         redoc_url="/redoc",
-        contact={"name": "PropIQ", "url": "https://github.com/tahmidnafees619/propiq"},
+        contact={
+            "name": "Md. Tahmidur Rahman Nafees",
+            "url": "https://github.com/tahmidnafees619/propiq-insights-explorer-main",
+        },
         license_info={"name": "MIT", "url": "https://opensource.org/licenses/MIT"},
     )
 
@@ -90,6 +93,7 @@ def create_app() -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins,
+        allow_origin_regex=settings.ALLOWED_ORIGIN_REGEX or None,
         allow_credentials=True,
         allow_methods=["GET", "POST", "OPTIONS"],
         allow_headers=["*"],
