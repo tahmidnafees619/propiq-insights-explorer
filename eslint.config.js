@@ -6,7 +6,22 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  {
+    // Python virtualenvs and build output live inside this repo. Without them
+    // here, `eslint .` walks ~200k site-package files before linting anything
+    // and takes minutes; with them it finishes in seconds.
+    ignores: [
+      "dist",
+      ".output",
+      ".vinxi",
+      ".wrangler",
+      ".venv",
+      ".venv-*",
+      "**/venv/**",
+      "propiq-backend/**",
+      "src/routeTree.gen.ts",
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
