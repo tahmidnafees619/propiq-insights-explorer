@@ -11,10 +11,13 @@
  * into a dimension leader, and the sheet annotates itself with what the thing
  * actually does.
  *
- * On scroll, the house reduces first, then the sheet furniture retracts, and
- * the wordmark dismantles letter by letter — each one flying toward the
- * corner where the navbar sits, on its own staggered window, rather than the
- * whole word shrinking as one block. The navbar's own plain-text logo fades
+ * On scroll, the house is lowered out of frame first — down and forward, with
+ * a contact shadow spreading to meet it — then the sheet furniture retracts,
+ * and the wordmark dismantles letter by letter. Each letter dips, loads, and
+ * swings up toward the corner where the navbar sits on its own staggered
+ * window, rather than the whole word shrinking as one block; the house going
+ * down while the letters go up is what gives the exit its depth. The whole
+ * runway is long on purpose, so none of it has to be read in a flick. The navbar's own plain-text logo fades
  * in once the last letter is gone; there is no shared-element morph between
  * the two, because a drawn stroke mark and typeset text don't share a shape
  * to morph between.
@@ -87,7 +90,7 @@ const MARK_BOX = {
  * references and the wordmark. A supporting detail, not a second hero — real
  * drawing sheets often carry a small massing sketch beside the plan.
  */
-const HOUSE_HEIGHT_UNITS = 84;
+const HOUSE_HEIGHT_UNITS = 106;
 const HOUSE_WIDTH_UNITS = HOUSE_HEIGHT_UNITS * (HOUSE_ART_W / HOUSE_ART_H);
 const HOUSE_CENTER_X = SHEET_W / 2;
 const HOUSE_CENTER_Y = 96;
@@ -97,9 +100,11 @@ const HOUSE_BOX: PercentBox = {
   width: `${(HOUSE_WIDTH_UNITS / SHEET_W) * 100}%`,
   height: `${(HOUSE_HEIGHT_UNITS / SHEET_H) * 100}%`,
 };
-/** The house recedes first, ahead of the sheet furniture — a foreground
- *  element leaving before the background does reads as depth. */
-const HOUSE_REDUCE_RANGE: [number, number] = [0.4, 0.7];
+/** The house leaves first, ahead of the sheet furniture — a foreground element
+ *  leaving before the background does reads as depth. It is given a long,
+ *  unhurried window: it descends rather than snapping away, and a descent that
+ *  is over in a flick reads as a glitch rather than as weight. */
+const HOUSE_REDUCE_RANGE: [number, number] = [0.3, 0.78];
 
 /**
  * The house's own opening reserves this much of the timeline before the
@@ -107,14 +112,20 @@ const HOUSE_REDUCE_RANGE: [number, number] = [0.4, 0.7];
  */
 const HOUSE_OFFSET = 1.3;
 
-/** Scroll runway. Longer on a first visit, so the sheet is not rushed past. */
-const SPAN = { full: 200, brief: 120 } as const;
+/**
+ * Scroll runway. The stage inside is one viewport tall and sticky, so the
+ * sheet stays pinned for the first `SPAN - 100` vh of this and the whole
+ * sequence is timed against that pinned stretch.
+ */
+const SPAN_VH = 260;
 
 /** The sheet retracts over this stretch of the runway; letters dismantle within it. */
-const RETRACT_FROM = 0.5;
-const RETRACT_TO = 0.88;
-/** Where the navbar's own logo takes over from the sheet. */
-const HANDOFF_AT = 0.93;
+const RETRACT_FROM = 0.44;
+const RETRACT_TO = 0.95;
+/** Where the navbar's own logo takes over — set just past the last letter's
+ *  landing, so the real logo appears as the flight ends rather than after a
+ *  beat of empty corner. */
+const HANDOFF_AT = 0.9;
 
 /**
  * Each glyph gets its own window inside the retract span, staggered so they
@@ -122,8 +133,8 @@ const HANDOFF_AT = 0.93;
  * one continuous motion rather than a slideshow.
  */
 const EXIT_START = RETRACT_FROM + 0.02;
-const EXIT_SPAN = 0.34;
-const EXIT_GLYPH_DURATION = 0.2;
+const EXIT_SPAN = 0.42;
+const EXIT_GLYPH_DURATION = 0.26;
 const EXIT_GAP =
   WORDMARK_GLYPH_GROUPS.length > 1
     ? (EXIT_SPAN - EXIT_GLYPH_DURATION) / (WORDMARK_GLYPH_GROUPS.length - 1)
@@ -137,8 +148,16 @@ const EXIT_GAP =
  * fixed point and crossfading to the real logo at the end reads just as well
  * without that fragility.
  */
-const CONVERGE_X = -40;
+const CONVERGE_X = -70;
 const CONVERGE_Y = -145;
+
+/**
+ * The flight is an arc, not a straight line: each letter dips and hangs back a
+ * little before it swings up to the corner. A letter that sets off on the
+ * shortest path reads as a tween; one that loads first reads as thrown.
+ */
+const ARC_HOLD = 0.38;
+const ARC_DIP = 22;
 
 /** Strokes belonging to the accented `IQ`, matched the same way `Wordmark`
  *  itself picks them — the last four strokes drawn. */
@@ -157,13 +176,23 @@ const TITLE_BLOCK: Array<[string, string]> = [
 const OUTPUTS = ["PRICE", "CONFIDENCE RANGE", "COMPARABLE SALES"];
 
 export function IntroSequence() {
-  const { mode, introActive, handOff } = useIntro();
+  const { introActive, handOff } = useIntro();
   const spacerRef = useRef<HTMLDivElement>(null);
   const { data: stats } = useStats();
 
+  /*
+   * `end end` — not `end start` — is what keeps the choreography on screen.
+   *
+   * The spacer is twice the height of the sticky stage inside it, so the sheet
+   * is pinned for the first half of the spacer and scrolls away during the
+   * second. Mapping progress across the whole spacer put the retract and the
+   * dismantle in that second half, which is to say: after the sheet had
+   * already left. Ending at `end end` finishes the range exactly where the
+   * stage unpins, so everything happens while it is still in view.
+   */
   const { scrollYProgress } = useScroll({
     target: spacerRef,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end end"],
   });
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
@@ -176,14 +205,14 @@ export function IntroSequence() {
   const sheetOpacity = useTransform(scrollYProgress, [RETRACT_FROM, RETRACT_TO], [1, 0]);
   const sheetLift = useTransform(scrollYProgress, [RETRACT_FROM, RETRACT_TO], [0, -70]);
   const markOpacity = useTransform(scrollYProgress, [EXIT_START - 0.02, EXIT_START + 0.05], [1, 0]);
-  const stageOpacity = useTransform(scrollYProgress, [0.9, 1], [1, 0]);
+  const stageOpacity = useTransform(scrollYProgress, [0.93, 1], [1, 0]);
   const cueOpacity = useTransform(scrollYProgress, [0, 0.14], [1, 0]);
 
-  if (mode === "off") return null;
+  // The provider decides whether the sheet runs at all: first dashboard view
+  // of the session, motion allowed, not already dismissed.
+  if (!introActive) return null;
 
-  // A returning visitor gets the same sheet, assembled rather than drawn.
-  const brief = mode === "brief";
-  const t = (seconds: number) => (brief ? seconds * 0.13 : seconds);
+  const t = (seconds: number) => seconds;
   // Everything after the house's own opening beat uses this instead of `t`.
   const t2 = (seconds: number) => t(seconds + HOUSE_OFFSET);
   const ink = {
@@ -193,7 +222,7 @@ export function IntroSequence() {
   };
 
   return (
-    <div ref={spacerRef} style={{ height: `${SPAN[brief ? "brief" : "full"]}vh` }}>
+    <div ref={spacerRef} style={{ height: `${SPAN_VH}vh` }}>
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-4">
         <motion.div className="relative w-full max-w-5xl" style={{ opacity: stageOpacity }}>
           <svg viewBox={`0 0 ${SHEET_W} ${SHEET_H}`} className="h-auto w-full" aria-hidden="true">
@@ -220,18 +249,16 @@ export function IntroSequence() {
             </motion.g>
 
             {/* --- the dismantle: each letter on its own scroll window ----- */}
-            {introActive && (
-              <g transform={MARK_TRANSFORM}>
-                {WORDMARK_GLYPH_GROUPS.map((group, i) => (
-                  <GlyphExit
-                    key={`${group.char}-${i}`}
-                    group={group}
-                    index={i}
-                    scrollYProgress={scrollYProgress}
-                  />
-                ))}
-              </g>
-            )}
+            <g transform={MARK_TRANSFORM}>
+              {WORDMARK_GLYPH_GROUPS.map((group, i) => (
+                <GlyphExit
+                  key={`${group.char}-${i}`}
+                  group={group}
+                  index={i}
+                  scrollYProgress={scrollYProgress}
+                />
+              ))}
+            </g>
           </svg>
 
           {/* The house sits above the sheet's own SVG so its CSS 3D tilt
@@ -251,7 +278,7 @@ export function IntroSequence() {
             className="pointer-events-none absolute"
             style={{ ...MARK_BOX, opacity: markOpacity }}
           >
-            {introActive && <Wordmark draw={brief ? undefined : ink} />}
+            <Wordmark draw={ink} />
           </motion.div>
 
           {/* --- annotation: what the sheet is for ----------------------- */}
@@ -329,10 +356,15 @@ function GlyphExit({
   const end = start + EXIT_GLYPH_DURATION;
   const local = useTransform(scrollYProgress, [start, end], [0, 1]);
 
-  const dx = useTransform(local, [0, 1], [0, CONVERGE_X - group.x]);
-  const dy = useTransform(local, [0, 1], [0, CONVERGE_Y]);
-  const scale = useTransform(local, [0, 1], [1, 0.22]);
-  const rotate = useTransform(local, [0, 1], [0, index % 2 === 0 ? -16 : 16]);
+  const travelX = CONVERGE_X - group.x;
+  const dx = useTransform(local, [0, ARC_HOLD, 1], [0, travelX * 0.1, travelX]);
+  const dy = useTransform(local, [0, ARC_HOLD, 1], [0, ARC_DIP, CONVERGE_Y]);
+  const scale = useTransform(local, [0, ARC_HOLD, 1], [1, 1.08, 0.22]);
+  const rotate = useTransform(
+    local,
+    [0, ARC_HOLD, 1],
+    [0, index % 2 === 0 ? 5 : -5, index % 2 === 0 ? -26 : 26],
+  );
   // Invisible until this glyph's own window opens (so it never doubles up
   // with the still-inking or still-static mark), snaps to full opacity
   // almost immediately once it does, then fades out as it finishes its flight.

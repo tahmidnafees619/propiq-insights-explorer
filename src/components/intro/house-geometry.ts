@@ -1,29 +1,33 @@
 /**
  * A small isometric house — a massing sketch, not a floor plan.
  *
- * Three iterations preceded this one. A pitched gable roof projected as a
- * blade that read as a wing rather than a roof, because its ridge — receding
- * on the depth axis — shifts hard up-and-left under isometric projection and
- * ends up sharing an edge with the wall top instead of sitting visibly above
- * it. Swapping to a hip roof (four slopes meeting at one apex) fixed the
- * "wing" problem but introduced a new one: with the apex rising directly off
- * the wall-top edge, the roof triangle scaled to match the wall's whole
- * diagonal span and dwarfed the building beneath it, at every wall-height and
- * pitch this shape was tried at.
+ * Earlier passes tried a pitched roof whose ridge ran on the depth axis. Under
+ * isometric projection a ridge on that axis shifts hard up-and-left and ends
+ * up sharing an edge with the wall top instead of sitting visibly above it, so
+ * the roof read as a blade rather than a roof. A hip roof fixed that but its
+ * apex, rising off the wall-top edge, scaled to the wall's whole diagonal span
+ * and dwarfed the building. A flat slab avoided both problems and read, fairly,
+ * as a table.
  *
- * What actually reads as a house at this scale is a flat, overhanging roof
- * slab — a massing-study convention architects use for a reason: it has no
- * apex to fight the projection, no ridge to skew, and the overhang alone is
- * enough to separate "roof" from "wall" at a glance. It also suits this
- * site's tone better than a pitched cottage would.
+ * The version that works puts the ridge on the *width* axis, so the gable
+ * triangle faces the viewer on the near end wall and the roof's two slopes
+ * separate cleanly into a lit near plane and a hidden far one. The rest is
+ * the detail that makes a box read as a building at small size: an overhanging
+ * eave with a fascia board, a rake board down the gable end, a ridge cap,
+ * shingle courses running parallel to the ridge, a chimney, and a plinth for
+ * the whole thing to stand on.
  *
  * Isometric projection, Z up:
  *   screenX = (X - Y) * cos(30°)
  *   screenY = (X + Y) * sin(30°) - Z
  *
- * Every path below is computed from that projection at module load, the same
- * approach `wordmark-geometry.ts` and `floorplan.ts` use, so the geometry is
- * one set of numbers rather than something hand-transcribed into markup.
+ * Because X and Y both push screenY downward, the near corner of the volume is
+ * (W, D) — which is why the visible walls are the `x = W` and `y = D` faces,
+ * and why every "hidden" edge below belongs to `x = 0` or `y = 0`.
+ *
+ * Every path is computed from that projection at module load, the same way
+ * `wordmark-geometry.ts` and `floorplan.ts` work, so the geometry is one set of
+ * numbers rather than something hand-transcribed into markup.
  */
 
 const COS30 = Math.cos(Math.PI / 6);
@@ -61,37 +65,51 @@ function polyline(points: Point3[]): string {
   return points.map((p, i) => `${i === 0 ? "M" : "L"}${point(p)}`).join(" ");
 }
 
-// ---- footprint, in iso units --------------------------------------------
-const W = 120;
-const D = 76;
-const H = 24; // wall height
-const THICK = 7; // roof slab thickness
-const OH = 9; // eave overhang, beyond the wall footprint on every side
+// ---- massing, in iso units ----------------------------------------------
+const W = 120; // width, the axis the ridge runs along
+const D = 78; // depth
+const H = 46; // wall head
+const RISE = 30; // ridge above the wall head
+const RH = H + RISE;
+const OH = 10; // eave and rake overhang, beyond the footprint
+const SLOPE = RISE / (D / 2);
+const EZ = H - OH * SLOPE; // the eave dips below the wall head, out past the wall
+const FASCIA = 4; // depth of the board hung off the eave
+const PL = 5; // plinth, wider than the walls on every side
+const PZ = -4; // plinth depth below grade level
 
-const A: Point3 = [0, 0, 0];
-const B: Point3 = [W, 0, 0];
-const C: Point3 = [W, D, 0];
-const DP: Point3 = [0, D, 0];
-const A2: Point3 = [0, 0, H];
-const B2: Point3 = [W, 0, H];
-const C2: Point3 = [W, D, H];
-const D2: Point3 = [0, D, H];
+const XL = -OH;
+const XR = W + OH;
+const YF = -OH; // far eave, on the hidden side
+const YB = D + OH; // near eave, the one facing the viewer
 
-const RA: Point3 = [-OH, -OH, H];
-const RB: Point3 = [W + OH, -OH, H];
-const RC: Point3 = [W + OH, D + OH, H];
-const RD: Point3 = [-OH, D + OH, H];
-const RA2: Point3 = [-OH, -OH, H + THICK];
-const RB2: Point3 = [W + OH, -OH, H + THICK];
-const RC2: Point3 = [W + OH, D + OH, H + THICK];
-const RD2: Point3 = [-OH, D + OH, H + THICK];
+const R0: Point3 = [XL, D / 2, RH];
+const R1: Point3 = [XR, D / 2, RH];
+const E0: Point3 = [XL, YB, EZ];
+const E1: Point3 = [XR, YB, EZ];
+const E0b: Point3 = [XL, YB, EZ - FASCIA];
+const E1b: Point3 = [XR, YB, EZ - FASCIA];
+const F0: Point3 = [XL, YF, EZ];
+const F1: Point3 = [XR, YF, EZ];
+
+/** Height of the near roof slope at a given depth. */
+function roofZ(y: number): number {
+  return RH - (y - D / 2) * SLOPE;
+}
 
 export type FaceTone =
-  | "wall-front"
+  | "plinth-top"
+  | "plinth-side"
+  | "plinth-gable"
   | "wall-side"
-  | "roof-top"
-  | "roof-fascia-front"
-  | "roof-fascia-side";
+  | "wall-gable"
+  | "roof"
+  | "fascia"
+  | "rake"
+  | "ridge"
+  | "chimney-top"
+  | "chimney-side"
+  | "chimney-front";
 
 export interface HouseFace {
   id: string;
@@ -99,51 +117,192 @@ export interface HouseFace {
   tone: FaceTone;
 }
 
-/** Solid faces, drawn back to front — later entries paint over earlier ones. */
+/**
+ * Solid faces, back to front — later entries paint over earlier ones. The
+ * ridge cap is a thin band folded just over the ridge line, which is what
+ * stops the two slopes from meeting in a single hairline and reading flat.
+ */
 export const HOUSE_FACES: HouseFace[] = [
-  { id: "wall-front", d: polygon([A, B, B2, A2]), tone: "wall-front" },
-  { id: "wall-side", d: polygon([B, C, C2, B2]), tone: "wall-side" },
-  { id: "roof-top", d: polygon([RA2, RB2, RC2, RD2]), tone: "roof-top" },
-  { id: "roof-fascia-front", d: polygon([RA, RB, RB2, RA2]), tone: "roof-fascia-front" },
-  { id: "roof-fascia-side", d: polygon([RB, RC, RC2, RB2]), tone: "roof-fascia-side" },
+  {
+    id: "plinth-top",
+    d: polygon([
+      [-PL, -PL, 0],
+      [W + PL, -PL, 0],
+      [W + PL, D + PL, 0],
+      [-PL, D + PL, 0],
+    ]),
+    tone: "plinth-top",
+  },
+  {
+    id: "plinth-side",
+    d: polygon([
+      [-PL, D + PL, 0],
+      [W + PL, D + PL, 0],
+      [W + PL, D + PL, PZ],
+      [-PL, D + PL, PZ],
+    ]),
+    tone: "plinth-side",
+  },
+  {
+    id: "plinth-gable",
+    d: polygon([
+      [W + PL, -PL, 0],
+      [W + PL, D + PL, 0],
+      [W + PL, D + PL, PZ],
+      [W + PL, -PL, PZ],
+    ]),
+    tone: "plinth-gable",
+  },
+  {
+    id: "wall-side",
+    d: polygon([
+      [0, D, 0],
+      [W, D, 0],
+      [W, D, H],
+      [0, D, H],
+    ]),
+    tone: "wall-side",
+  },
+  {
+    id: "wall-gable",
+    d: polygon([
+      [W, 0, 0],
+      [W, D, 0],
+      [W, D, H],
+      [W, D / 2, RH],
+      [W, 0, H],
+    ]),
+    tone: "wall-gable",
+  },
+  { id: "roof", d: polygon([R0, R1, E1, E0]), tone: "roof" },
+  { id: "fascia", d: polygon([E0, E1, E1b, E0b]), tone: "fascia" },
+  { id: "rake", d: polygon([R1, E1, E1b, [XR, D / 2, RH - FASCIA]]), tone: "rake" },
+  {
+    id: "ridge",
+    d: polygon([
+      R0,
+      R1,
+      [XR, D / 2 + 3.4, roofZ(D / 2 + 3.4) - 2.6],
+      [XL, D / 2 + 3.4, roofZ(D / 2 + 3.4) - 2.6],
+    ]),
+    tone: "ridge",
+  },
 ];
 
-/** Edges that suggest the far side of the volume, struck as dashed lines. */
+/** Shingle courses, parallel to the ridge, down the visible slope. */
+export const HOUSE_COURSES: string[] = [0.28, 0.52, 0.76].map((f) => {
+  const y = D / 2 + f * (YB - D / 2);
+  return polyline([
+    [XL, y, roofZ(y)],
+    [XR, y, roofZ(y)],
+  ]);
+});
+
+/** Painted after the courses, so no course line runs across the stack. */
+const cx0 = W * 0.44;
+const cx1 = W * 0.58;
+const cy0 = D * 0.58;
+const cy1 = D * 0.7;
+const cTop = RH + 12;
+
+export const HOUSE_CHIMNEY: HouseFace[] = [
+  {
+    id: "chimney-side",
+    d: polygon([
+      [cx1, cy0, roofZ(cy0)],
+      [cx1, cy1, roofZ(cy1)],
+      [cx1, cy1, cTop],
+      [cx1, cy0, cTop],
+    ]),
+    tone: "chimney-side",
+  },
+  {
+    id: "chimney-front",
+    d: polygon([
+      [cx0, cy1, roofZ(cy1)],
+      [cx1, cy1, roofZ(cy1)],
+      [cx1, cy1, cTop],
+      [cx0, cy1, cTop],
+    ]),
+    tone: "chimney-front",
+  },
+  {
+    id: "chimney-top",
+    d: polygon([
+      [cx0, cy0, cTop],
+      [cx1, cy0, cTop],
+      [cx1, cy1, cTop],
+      [cx0, cy1, cTop],
+    ]),
+    tone: "chimney-top",
+  },
+];
+
+/** Edges on the far side of the volume, struck as dashed lines. */
 export const HOUSE_HIDDEN: string[] = [
-  polyline([DP, D2]),
-  polyline([D2, C2]),
-  polyline([RD, RD2]),
-  polyline([RC, RC2]),
-  polyline([RD, RC]),
+  polyline([
+    [0, 0, 0],
+    [W, 0, 0],
+  ]),
+  polyline([
+    [0, 0, 0],
+    [0, D, 0],
+  ]),
+  polyline([
+    [0, 0, 0],
+    [0, 0, H],
+  ]),
+  polyline([R0, F0]),
+  polyline([F0, F1]),
+  polyline([R0, E0]),
 ];
 
-/** Door and window, drawn as open outlines on their wall faces. */
-const doorX0 = W * 0.24;
-const doorW = W * 0.15;
-const doorH = H * 0.6;
-const winY0 = D * 0.3;
-const winW = D * 0.26;
-const winH = H * 0.3;
-const winZ = H * 0.34;
-
+/** Door and windows, drawn as open outlines on their wall faces. */
 export const HOUSE_DETAILS: string[] = [
   polygon([
-    [doorX0, 0, 0],
-    [doorX0 + doorW, 0, 0],
-    [doorX0 + doorW, 0, doorH],
-    [doorX0, 0, doorH],
+    [W, D * 0.3, 0],
+    [W, D * 0.48, 0],
+    [W, D * 0.48, H * 0.6],
+    [W, D * 0.3, H * 0.6],
   ]),
   polygon([
-    [W, winY0, winZ],
-    [W, winY0 + winW, winZ],
-    [W, winY0 + winW, winZ + winH],
-    [W, winY0, winZ + winH],
+    [W, D * 0.62, H * 0.3],
+    [W, D * 0.8, H * 0.3],
+    [W, D * 0.8, H * 0.62],
+    [W, D * 0.62, H * 0.62],
+  ]),
+  polygon([
+    [W * 0.18, D, H * 0.3],
+    [W * 0.38, D, H * 0.3],
+    [W * 0.38, D, H * 0.62],
+    [W * 0.18, D, H * 0.62],
+  ]),
+  polygon([
+    [W * 0.55, D, H * 0.3],
+    [W * 0.75, D, H * 0.3],
+    [W * 0.75, D, H * 0.62],
+    [W * 0.55, D, H * 0.62],
   ]),
 ];
 
 // ---- bounding box, for centring and scaling the composed drawing --------
-const allPoints = [A, B, C, DP, A2, B2, C2, D2, RA, RB, RC, RD, RA2, RB2, RC2, RD2];
-const projected = allPoints.map(project);
+const extent: Point3[] = [
+  [-PL, -PL, PZ],
+  [W + PL, -PL, PZ],
+  [W + PL, D + PL, PZ],
+  [-PL, D + PL, PZ],
+  R0,
+  R1,
+  E0,
+  E1,
+  E0b,
+  E1b,
+  F0,
+  F1,
+  [cx0, cy0, cTop],
+  [cx1, cy1, cTop],
+];
+const projected = extent.map(project);
 const xs = projected.map((p) => p[0]);
 const ys = projected.map((p) => p[1]);
 
