@@ -5,8 +5,8 @@
 
 # --- Testing ---
 pytest==8.2.0
-httpx==0.27.0            # required by fastapi.testclient
+httpx==0.28.1            # required by fastapi.testclient
 
 # --- Linting & typing ---
-ruff==0.14.2
+ruff==0.16.8
 mypy==1.11.2
