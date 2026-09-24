@@ -2,20 +2,20 @@
 # Install with: pip install -r requirements.txt
 
 # --- Web framework ---
-fastapi==0.136.1
-uvicorn[standard]==0.47.0
-python-multipart==0.0.29
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+python-multipart==0.0.32
 
 # --- Configuration ---
-pydantic==2.13.4
-pydantic-settings==2.14.1
-python-dotenv==1.2.2
+pydantic==2.13.5
+pydantic-settings==2.15.0
+python-dotenv==1.2.3
 
 # --- Persistence ---
-sqlalchemy==2.0.49
+sqlalchemy==2.0.54
 
 # --- Data & machine learning ---
 numpy==2.4.6
-pandas==3.0.3
-scikit-learn==1.8.0
+pandas==3.0.6
+scikit-learn==1.9.1
 scipy==1.17.1
